@@ -1,0 +1,357 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0e1f3d" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#081024" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#030712" stop-opacity="1"/>
+    </radialGradient>
+
+    <radialGradient id="cyanBacklight" cx="68%" cy="48%" r="40%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.32"/>
+      <stop offset="50%" stop-color="#0369a1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Card Materials -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1f38"/>
+      <stop offset="40%" stop-color="#091326"/>
+      <stop offset="100%" stop-color="#050a16"/>
+    </linearGradient>
+
+    <linearGradient id="cardBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#1e3a8a" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.6"/>
+    </linearGradient>
+
+    <linearGradient id="chassisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09152b" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#040914" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Laser & Accents -->
+    <linearGradient id="laserBeam" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#38bdf8" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="75%" stop-color="#38bdf8" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="laserGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Gold Chip Gradient -->
+    <linearGradient id="goldChip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- Text Brand Gradient -->
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <linearGradient id="verifGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.4"/>
+      <circle cx="30" cy="0" r="1" fill="#38bdf8" fill-opacity="0.2"/>
+    </pattern>
+  </defs>
+
+  <!-- Deep Midnight Navy Canvas -->
+  <rect width="1200" height="540" fill="#030712"/>
+  <rect width="1200" height="540" fill="url(#bgGlow)"/>
+  <rect width="1200" height="540" fill="url(#grid)"/>
+
+  <!-- Atmospheric Lighting Radiance -->
+  <circle cx="820" cy="270" r="320" fill="url(#cyanBacklight)"/>
+
+  <!-- Left Editorial Typography & Branding -->
+  <g transform="translate(80, 100)">
+    <!-- Brand Eyebrow Pill -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="220" height="28" rx="14" fill="#0284c7" fill-opacity="0.12" stroke="#38bdf8" stroke-opacity="0.3" stroke-width="1"/>
+      <circle cx="16" cy="14" r="4" fill="#38bdf8"/>
+      <text x="30" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8" letter-spacing="1.5">AI DOCUMENT INTELLIGENCE</text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="72" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="44" font-weight="800" fill="url(#titleGrad)" letter-spacing="-0.5">
+      DocShield
+    </text>
+    
+    <!-- Headline -->
+    <text x="0" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff" letter-spacing="-0.5">
+      Every Document Has a Story.
+    </text>
+    <text x="0" y="154" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="url(#verifGrad)" letter-spacing="-0.5">
+      Verify What Matters.
+    </text>
+
+    <!-- Subtitle / Mission -->
+    <text x="0" y="200" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400" fill="#94a3b8" line-height="24">
+      <tspan x="0" dy="0">AI-powered document intelligence, multi-signal authenticity</tspan>
+      <tspan x="0" dy="24">assessment, and transparent regulatory compliance checks</tspan>
+      <tspan x="0" dy="24">designed for high-integrity decision systems.</tspan>
+    </text>
+
+    <!-- Capability Tags -->
+    <g transform="translate(0, 290)">
+      <!-- Tag 1 -->
+      <g transform="translate(0, 0)">
+        <rect width="130" height="26" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <circle cx="12" cy="13" r="3" fill="#38bdf8"/>
+        <text x="22" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">Text Extraction</text>
+      </g>
+      <!-- Tag 2 -->
+      <g transform="translate(140, 0)">
+        <rect width="140" height="26" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <circle cx="12" cy="13" r="3" fill="#10b981"/>
+        <text x="22" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">Integrity Signals</text>
+      </g>
+      <!-- Tag 3 -->
+      <g transform="translate(290, 0)">
+        <rect width="145" height="26" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <circle cx="12" cy="13" r="3" fill="#c084fc"/>
+        <text x="22" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#cbd5e1">Compliance Rules</text>
+      </g>
+    </g>
+
+    <!-- Trust Disclaimer Line -->
+    <g transform="translate(0, 345)">
+      <path d="M 0 0 L 12 0 M 6 -6 L 6 6" stroke="#0284c7" stroke-width="1.5" stroke-linecap="round"/>
+      <text x="20" y="4" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="500" fill="#64748b">
+        Explainable Decision Signals · Sandbox Simulated Verification
+      </text>
+    </g>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- RIGHT: THE CINEMATIC 3D VERIFICATION CHAMBER                  -->
+  <!-- ============================================================= -->
+  <g transform="translate(620, 60)">
+
+    <!-- Chamber Luminous Calibration Rings -->
+    <g transform="translate(240, 205)" opacity="0.6">
+      <ellipse cx="0" cy="0" rx="250" ry="170" fill="none" stroke="#1e3a8a" stroke-width="1" stroke-dasharray="8 6"/>
+      <ellipse cx="0" cy="0" rx="275" ry="190" fill="none" stroke="#0284c7" stroke-width="0.75" stroke-opacity="0.3"/>
+      <!-- Calibration Degree Marks -->
+      <line x1="-250" y1="0" x2="-260" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+      <line x1="250" y1="0" x2="260" y2="0" stroke="#38bdf8" stroke-width="1.5"/>
+      <line x1="0" y1="-170" x2="0" y2="-180" stroke="#38bdf8" stroke-width="1.5"/>
+      <line x1="0" y1="170" x2="0" y2="180" stroke="#38bdf8" stroke-width="1.5"/>
+      <text x="268" y="4" font-family="monospace" font-size="8" fill="#38bdf8">0°</text>
+      <text x="-4" y="-186" font-family="monospace" font-size="8" fill="#38bdf8">90°</text>
+      <text x="-290" y="4" font-family="monospace" font-size="8" fill="#38bdf8">180°</text>
+      <text x="-8" y="194" font-family="monospace" font-size="8" fill="#38bdf8">270°</text>
+    </g>
+
+    <!-- Verification Chamber Chassis Plate (Angled/Three-Quarter Depth) -->
+    <g transform="translate(30, 20)">
+      <!-- Chamber Backdrop Polygon -->
+      <polygon points="40,20 440,0 420,380 20,400" fill="url(#chassisGrad)" stroke="#1e3a5f" stroke-width="1.5" stroke-opacity="0.7"/>
+      
+      <!-- Chamber Grid Overlay -->
+      <polygon points="55,35 425,18 408,365 38,382" fill="none" stroke="#0284c7" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="4 4"/>
+
+      <!-- Chamber Corner Light Guides (4 Cylinders) -->
+      <!-- Top-Left -->
+      <g transform="translate(38, 20)">
+        <circle cx="0" cy="0" r="5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="2" fill="#ffffff"/>
+      </g>
+      <!-- Top-Right -->
+      <g transform="translate(440, 0)">
+        <circle cx="0" cy="0" r="5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="2" fill="#ffffff"/>
+      </g>
+      <!-- Bottom-Left -->
+      <g transform="translate(20, 400)">
+        <circle cx="0" cy="0" r="5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="2" fill="#ffffff"/>
+      </g>
+      <!-- Bottom-Right -->
+      <g transform="translate(420, 380)">
+        <circle cx="0" cy="0" r="5" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="2" fill="#ffffff"/>
+      </g>
+    </g>
+
+    <!-- ========================================================= -->
+    <!-- 3D DIMENSIONAL IDENTITY SPECIMEN (PERSPECTIVE TRANSLATION) -->
+    <!-- ========================================================= -->
+    <g transform="translate(55, 55)">
+      <!-- Card Drop Shadow / Physical Thickness Layer -->
+      <polygon points="48,38 418,18 398,338 28,358" fill="#020617" fill-opacity="0.95"/>
+      <polygon points="44,34 414,14 418,18 398,338 394,334 28,358" fill="#0c1830" stroke="#1e3a5f" stroke-width="1"/>
+
+      <!-- Main Specimen Front Face -->
+      <polygon points="40,30 410,10 390,330 20,350" fill="url(#cardGrad)" stroke="url(#cardBorderGrad)" stroke-width="1.75"/>
+
+      <!-- Inner Fine Specimen Border -->
+      <polygon points="48,37 402,18 383,322 29,341" fill="none" stroke="#38bdf8" stroke-width="0.75" stroke-opacity="0.3"/>
+
+      <!-- Specimen Header Strip -->
+      <polygon points="50,39 400,20 395,78 45,97" fill="#0b172d" stroke="#1e293b" stroke-width="0.5"/>
+      <text x="95" y="65" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="700" fill="#38bdf8" letter-spacing="1">REPUBLIC IDENTIFICATION SPECIMEN</text>
+      <text x="95" y="78" font-family="monospace" font-size="7.5" fill="#64748b">STANDARD FICTIONAL SPECIMEN · TYPE P-09</text>
+
+      <!-- Precision Gold Microchip Contact Pad -->
+      <g transform="translate(58, 48)">
+        <rect x="0" y="0" width="26" height="22" rx="3" fill="url(#goldChip)" stroke="#78350f" stroke-width="0.5"/>
+        <line x1="8" y1="0" x2="8" y2="22" stroke="#78350f" stroke-width="0.5"/>
+        <line x1="18" y1="0" x2="18" y2="22" stroke="#78350f" stroke-width="0.5"/>
+        <line x1="0" y1="11" x2="26" y2="11" stroke="#78350f" stroke-width="0.5"/>
+      </g>
+
+      <!-- Abstract Biometric Portrait Box -->
+      <g transform="translate(42, 115)">
+        <polygon points="0,0 95,-5 90,120 -5,125" fill="#091326" stroke="#1e3a5f" stroke-width="1"/>
+        <!-- Silhouette Head & Shoulders -->
+        <circle cx="45" cy="45" r="22" fill="#1e293b" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.5"/>
+        <ellipse cx="45" cy="95" rx="34" ry="24" fill="#1e293b" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.5"/>
+        <circle cx="45" cy="45" r="14" fill="#0f172a"/>
+        <!-- Facial Scan Crosshair Overlay -->
+        <line x1="45" y1="20" x2="45" y2="70" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+        <line x1="20" y1="45" x2="70" y2="45" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+        <rect x="25" y="25" width="40" height="40" fill="none" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.4"/>
+      </g>
+
+      <!-- Structured Information Fields -->
+      <!-- Field 1: Document Identifier -->
+      <g transform="translate(155, 110)">
+        <text x="0" y="0" font-family="monospace" font-size="7" fill="#64748b">CREDENTIAL IDENTIFIER</text>
+        <rect x="0" y="4" width="165" height="13" rx="2" fill="#0c1a33" stroke="#0284c7" stroke-width="0.75" stroke-opacity="0.8"/>
+        <text x="8" y="14" font-family="monospace" font-size="9" font-weight="700" fill="#38bdf8">DS-9024-X781-ALPHA</text>
+      </g>
+
+      <!-- Field 2: Full Legal Name -->
+      <g transform="translate(155, 142)">
+        <text x="0" y="0" font-family="monospace" font-size="7" fill="#64748b">SUBJECT DESIGNATION</text>
+        <rect x="0" y="4" width="200" height="11" rx="2" fill="#0b172a"/>
+        <rect x="5" y="7" width="130" height="5" rx="1" fill="#94a3b8"/>
+      </g>
+
+      <!-- Field 3: Date of Birth & Issue -->
+      <g transform="translate(155, 170)">
+        <text x="0" y="0" font-family="monospace" font-size="7" fill="#64748b">TEMPORAL METRICS</text>
+        <rect x="0" y="4" width="95" height="11" rx="2" fill="#0b172a"/>
+        <rect x="5" y="7" width="65" height="5" rx="1" fill="#64748b"/>
+        <rect x="105" y="4" width="95" height="11" rx="2" fill="#0b172a"/>
+        <rect x="110" y="7" width="65" height="5" rx="1" fill="#64748b"/>
+      </g>
+
+      <!-- Field 4: Issuing Authority & Class -->
+      <g transform="translate(155, 198)">
+        <text x="0" y="0" font-family="monospace" font-size="7" fill="#64748b">AUTHORITY &amp; CLASSIFICATION</text>
+        <rect x="0" y="4" width="180" height="11" rx="2" fill="#0b172a"/>
+        <rect x="5" y="7" width="115" height="5" rx="1" fill="#94a3b8"/>
+      </g>
+
+      <!-- Field 5: Security Micro-Verification Barcode / Matrix -->
+      <g transform="translate(155, 226)">
+        <rect x="0" y="0" width="80" height="16" fill="#070e1d" stroke="#1e293b" stroke-width="0.5"/>
+        <!-- Simulated Barcode Lines -->
+        <line x1="6" y1="2" x2="6" y2="14" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="12" y1="2" x2="12" y2="14" stroke="#64748b" stroke-width="1"/>
+        <line x1="16" y1="2" x2="16" y2="14" stroke="#38bdf8" stroke-width="2"/>
+        <line x1="22" y1="2" x2="22" y2="14" stroke="#64748b" stroke-width="1"/>
+        <line x1="28" y1="2" x2="28" y2="14" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="34" y1="2" x2="34" y2="14" stroke="#64748b" stroke-width="2"/>
+        <line x1="42" y1="2" x2="42" y2="14" stroke="#38bdf8" stroke-width="1"/>
+        <line x1="48" y1="2" x2="48" y2="14" stroke="#64748b" stroke-width="1.5"/>
+        <line x1="56" y1="2" x2="56" y2="14" stroke="#38bdf8" stroke-width="2"/>
+        <line x1="64" y1="2" x2="64" y2="14" stroke="#64748b" stroke-width="1"/>
+        <line x1="72" y1="2" x2="72" y2="14" stroke="#38bdf8" stroke-width="1.5"/>
+      </g>
+
+      <!-- Machine Readable Zone (MRZ) Optical Band -->
+      <g transform="translate(30, 260)">
+        <polygon points="0,0 350,-18 340,55 -10,73" fill="#040813" stroke="#1e293b" stroke-width="1"/>
+        <!-- MRZ Optical Font Lines -->
+        <text x="12" y="24" font-family="monospace" font-size="8.5" font-weight="700" fill="#38bdf8" letter-spacing="2.5">
+          P&lt;UTOALPHASEC&lt;&lt;JOHN&lt;DOE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+        </text>
+        <text x="8" y="44" font-family="monospace" font-size="8.5" font-weight="700" fill="#10b981" letter-spacing="2.5">
+          DS90248102UTO8801014M3001019&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;02
+        </text>
+      </g>
+
+      <!-- Optical Scanning Laser Plane (Traversing Surface) -->
+      <g transform="translate(0, 165)">
+        <polygon points="0,-15 425,-35 425,15 0,35" fill="url(#laserGlow)"/>
+        <line x1="0" y1="10" x2="425" y2="-10" stroke="url(#laserBeam)" stroke-width="2.5" filter="url(#glow)"/>
+        <line x1="0" y1="10" x2="425" y2="-10" stroke="#ffffff" stroke-width="1"/>
+      </g>
+    </g>
+
+    <!-- ========================================================= -->
+    <!-- CONNECTED ANALYSIS NODES & FLOATING METADATA BEACONS      -->
+    <!-- ========================================================= -->
+    
+    <!-- Node 1: OCR & Structured Extraction (Top-Left) -->
+    <g transform="translate(15, 30)">
+      <line x1="60" y1="25" x2="160" y2="90" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+      <circle cx="60" cy="25" r="4" fill="#38bdf8" filter="url(#subtleGlow)"/>
+      <rect x="0" y="8" width="120" height="24" rx="12" fill="#0a1930" stroke="#0284c7" stroke-width="1"/>
+      <circle cx="12" cy="20" r="3" fill="#38bdf8"/>
+      <text x="22" y="24" font-family="-apple-system, sans-serif" font-size="9" font-weight="700" fill="#e0f2fe">OCR Extraction</text>
+    </g>
+
+    <!-- Node 2: Integrity & Tamper Heuristics (Top-Right) -->
+    <g transform="translate(360, 5)">
+      <line x1="50" y1="35" x2="-20" y2="120" stroke="#10b981" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+      <circle cx="50" cy="35" r="4" fill="#10b981" filter="url(#subtleGlow)"/>
+      <rect x="0" y="18" width="135" height="24" rx="12" fill="#06201a" stroke="#059669" stroke-width="1"/>
+      <circle cx="14" cy="30" r="3" fill="#10b981"/>
+      <text x="24" y="34" font-family="-apple-system, sans-serif" font-size="9" font-weight="700" fill="#a7f3d0">Integrity Verified</text>
+    </g>
+
+    <!-- Node 3: Compliance Policy Evaluation (Bottom-Right) -->
+    <g transform="translate(380, 390)">
+      <line x1="30" y1="0" x2="-60" y2="-90" stroke="#c084fc" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+      <circle cx="30" cy="0" r="4" fill="#c084fc" filter="url(#subtleGlow)"/>
+      <rect x="-20" y="5" width="145" height="24" rx="12" fill="#1b122e" stroke="#9333ea" stroke-width="1"/>
+      <circle cx="-6" cy="17" r="3" fill="#c084fc"/>
+      <text x="4" y="21" font-family="-apple-system, sans-serif" font-size="9" font-weight="700" fill="#f3e8ff">Policy Compliance</text>
+    </g>
+
+    <!-- Floating Decision Dossier Tag (Bottom-Left) -->
+    <g transform="translate(20, 395)">
+      <rect x="0" y="0" width="220" height="42" rx="8" fill="#091428" stroke="#1e3a5f" stroke-width="1" filter="url(#subtleGlow)"/>
+      <circle cx="16" cy="16" r="4" fill="#38bdf8"/>
+      <text x="28" y="19" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#ffffff">Decision Assessment Preview</text>
+      <text x="28" y="32" font-family="monospace" font-size="8" fill="#38bdf8">AUTHENTICITY 94/100 · PASS</text>
+      <rect x="180" y="10" width="30" height="14" rx="3" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="0.5"/>
+      <text x="186" y="20" font-family="monospace" font-size="7.5" font-weight="700" fill="#10b981">DEMO</text>
+    </g>
+
+  </g>
+
+</svg>

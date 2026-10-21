@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="archBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050a16"/>
+      <stop offset="50%" stop-color="#081329"/>
+      <stop offset="100%" stop-color="#040813"/>
+    </linearGradient>
+
+    <!-- Layer Gradient -->
+    <linearGradient id="layerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f1f3d"/>
+      <stop offset="100%" stop-color="#0a1529"/>
+    </linearGradient>
+
+    <linearGradient id="activeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <linearGradient id="plannedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Container Box -->
+  <rect width="1000" height="360" rx="16" fill="url(#archBg)" stroke="#1e293b" stroke-width="1.2"/>
+
+  <!-- Architecture Header Strip -->
+  <g transform="translate(35, 24)">
+    <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+    <text x="22" y="12" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#ffffff" letter-spacing="0.5">
+      DOCSHIELD SYSTEM ARCHITECTURE
+    </text>
+    <text x="800" y="12" font-family="monospace" font-size="9" fill="#64748b">
+      MODULAR MULTI-LAYER PIPELINE
+    </text>
+    <line x1="0" y1="24" x2="930" y2="24" stroke="#1e293b" stroke-width="1"/>
+  </g>
+
+  <!-- ==================== COLUMN 1: PRESENTATION LAYER ==================== -->
+  <g transform="translate(35, 65)">
+    <rect width="210" height="265" rx="10" fill="url(#layerGrad)" stroke="#0284c7" stroke-width="1.2"/>
+    <rect x="0" y="0" width="210" height="34" rx="10" fill="url(#activeGrad)"/>
+    
+    <!-- Header -->
+    <text x="14" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">1. CLIENT / PRESENTATION</text>
+    <rect x="155" y="10" width="45" height="15" rx="3" fill="#0284c7" fill-opacity="0.2" stroke="#38bdf8" stroke-width="0.5"/>
+    <text x="160" y="21" font-family="monospace" font-size="7.5" font-weight="700" fill="#38bdf8">ACTIVE</text>
+
+    <!-- Components List -->
+    <g transform="translate(14, 48)">
+      <!-- Item 1 -->
+      <rect width="182" height="42" rx="6" fill="#091428" stroke="#1e3a5f" stroke-width="0.8"/>
+      <text x="10" y="18" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#f1f5f9">3D Verification Chamber</text>
+      <text x="10" y="32" font-family="monospace" font-size="8" fill="#94a3b8">Three.js · R3F · Drei</text>
+
+      <!-- Item 2 -->
+      <rect y="48" width="182" height="42" rx="6" fill="#091428" stroke="#1e3a5f" stroke-width="0.8"/>
+      <text x="10" y="66" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#f1f5f9">Operator Workspace</text>
+      <text x="10" y="80" font-family="monospace" font-size="8" fill="#94a3b8">Cases · Documents · Rules</text>
+
+      <!-- Item 3 -->
+      <rect y="96" width="182" height="42" rx="6" fill="#091428" stroke="#1e3a5f" stroke-width="0.8"/>
+      <text x="10" y="114" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#f1f5f9">Design System &amp; Tokens</text>
+      <text x="10" y="128" font-family="monospace" font-size="8" fill="#94a3b8">Tailwind v4 · Dark/Light Mode</text>
+
+      <!-- Item 4 -->
+      <rect y="144" width="182" height="42" rx="6" fill="#091428" stroke="#1e3a5f" stroke-width="0.8"/>
+      <text x="10" y="162" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#f1f5f9">Typed Client Services</text>
+      <text x="10" y="176" font-family="monospace" font-size="8" fill="#94a3b8">Synthetic Engine &amp; Mocks</text>
+    </g>
+  </g>
+
+  <!-- Flow Connector 1 -->
+  <g transform="translate(255, 185)">
+    <line x1="0" y1="0" x2="16" y2="0" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polygon points="16,-3 22,0 16,3" fill="#38bdf8"/>
+    <text x="11" y="-8" font-family="monospace" font-size="7" fill="#64748b" text-anchor="middle">REST / JSON</text>
+  </g>
+
+  <!-- ==================== COLUMN 2: API GATEWAY & DTO ==================== -->
+  <g transform="translate(280, 65)">
+    <rect width="210" height="265" rx="10" fill="url(#layerGrad)" stroke="#1e293b" stroke-width="1"/>
+    <rect x="0" y="0" width="210" height="34" rx="10" fill="url(#plannedGrad)"/>
+
+    <!-- Header -->
+    <text x="14" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#cbd5e1">2. GATEWAY &amp; ROUTING</text>
+    <rect x="145" y="10" width="55" height="15" rx="3" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+    <text x="150" y="21" font-family="monospace" font-size="7.5" font-weight="700" fill="#94a3b8">PLANNED</text>
+
+    <!-- Components List -->
+    <g transform="translate(14, 48)">
+      <!-- Item 1 -->
+      <rect width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="18" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">FastAPI Endpoints</text>
+      <text x="10" y="32" font-family="monospace" font-size="8" fill="#64748b">Async HTTP Routing</text>
+
+      <!-- Item 2 -->
+      <rect y="48" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="66" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Pydantic Schemas</text>
+      <text x="10" y="80" font-family="monospace" font-size="8" fill="#64748b">Payload Validation &amp; DTOs</text>
+
+      <!-- Item 3 -->
+      <rect y="96" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="114" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Security &amp; Audit Interceptors</text>
+      <text x="10" y="128" font-family="monospace" font-size="8" fill="#64748b">SHA-256 Intake Fingerprint</text>
+
+      <!-- Item 4 -->
+      <rect y="144" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="162" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">CORS &amp; Middleware</text>
+      <text x="10" y="176" font-family="monospace" font-size="8" fill="#64748b">Safe File Upload Limits</text>
+    </g>
+  </g>
+
+  <!-- Flow Connector 2 -->
+  <g transform="translate(500, 185)">
+    <line x1="0" y1="0" x2="16" y2="0" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polygon points="16,-3 22,0 16,3" fill="#818cf8"/>
+  </g>
+
+  <!-- ==================== COLUMN 3: EXTRACTION PIPELINE ==================== -->
+  <g transform="translate(525, 65)">
+    <rect width="210" height="265" rx="10" fill="url(#layerGrad)" stroke="#1e293b" stroke-width="1"/>
+    <rect x="0" y="0" width="210" height="34" rx="10" fill="url(#plannedGrad)"/>
+
+    <!-- Header -->
+    <text x="14" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#cbd5e1">3. PROCESSING PIPELINE</text>
+    <rect x="145" y="10" width="55" height="15" rx="3" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+    <text x="150" y="21" font-family="monospace" font-size="7.5" font-weight="700" fill="#94a3b8">PLANNED</text>
+
+    <!-- Components List -->
+    <g transform="translate(14, 48)">
+      <!-- Item 1 -->
+      <rect width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="18" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">PyMuPDF Document Parser</text>
+      <text x="10" y="32" font-family="monospace" font-size="8" fill="#64748b">Vector PDF &amp; Metadata Intake</text>
+
+      <!-- Item 2 -->
+      <rect y="48" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="66" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Tesseract OCR Engine</text>
+      <text x="10" y="80" font-family="monospace" font-size="8" fill="#64748b">Word Confidence &amp; BBoxes</text>
+
+      <!-- Item 3 -->
+      <rect y="96" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="114" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">MRZ &amp; Field Normalizer</text>
+      <text x="10" y="128" font-family="monospace" font-size="8" fill="#64748b">Checksums &amp; Date Parsers</text>
+
+      <!-- Item 4 -->
+      <rect y="144" width="182" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="162" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Quality Evaluator</text>
+      <text x="10" y="176" font-family="monospace" font-size="8" fill="#64748b">Blur, Glare &amp; Skew Check</text>
+    </g>
+  </g>
+
+  <!-- Flow Connector 3 -->
+  <g transform="translate(745, 185)">
+    <line x1="0" y1="0" x2="16" y2="0" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polygon points="16,-3 22,0 16,3" fill="#10b981"/>
+  </g>
+
+  <!-- ==================== COLUMN 4: INTELLIGENCE & DATA ==================== -->
+  <g transform="translate(770, 65)">
+    <rect width="200" height="265" rx="10" fill="url(#layerGrad)" stroke="#1e293b" stroke-width="1"/>
+    <rect x="0" y="0" width="200" height="34" rx="10" fill="url(#plannedGrad)"/>
+
+    <!-- Header -->
+    <text x="14" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#cbd5e1">4. RULES &amp; STORAGE</text>
+    <rect x="135" y="10" width="55" height="15" rx="3" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+    <text x="140" y="21" font-family="monospace" font-size="7.5" font-weight="700" fill="#94a3b8">PLANNED</text>
+
+    <!-- Components List -->
+    <g transform="translate(14, 48)">
+      <!-- Item 1 -->
+      <rect width="172" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="18" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Heuristic Scoring Engine</text>
+      <text x="10" y="32" font-family="monospace" font-size="8" fill="#64748b">Multi-Signal Authenticity</text>
+
+      <!-- Item 2 -->
+      <rect y="48" width="172" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="66" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Declarative Compliance</text>
+      <text x="10" y="80" font-family="monospace" font-size="8" fill="#64748b">Configurable KYC Policies</text>
+
+      <!-- Item 3 -->
+      <rect y="96" width="172" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="114" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">SQLite / PostgreSQL Store</text>
+      <text x="10" y="128" font-family="monospace" font-size="8" fill="#64748b">Cases, Audits, Findings</text>
+
+      <!-- Item 4 -->
+      <rect y="144" width="172" height="42" rx="6" fill="#091428" stroke="#1e293b" stroke-width="0.8"/>
+      <text x="10" y="162" font-family="-apple-system, sans-serif" font-size="10" font-weight="600" fill="#cbd5e1">Simulated Registry Adapter</text>
+      <text x="10" y="176" font-family="monospace" font-size="8" fill="#64748b">Mock Issuer Verification</text>
+    </g>
+  </g>
+</svg>
