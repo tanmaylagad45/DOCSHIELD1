@@ -14,9 +14,11 @@ import {
   Download,
   Clock,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Loader2
 } from 'lucide-react';
 import type { DocumentItem } from '../../types';
+import { documentsApi } from '../../services/documentsApi';
 import { 
   mockExtractedFields, 
   mockVerificationRecords, 
@@ -37,6 +39,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
   onStatusChange
 }) => {
   const [activeTab, setActiveTab] = useState<'FIELDS' | 'AUTHENTICITY' | 'COMPLIANCE' | 'REVIEW'>('FIELDS');
+  const [isDownloading, setIsDownloading] = useState(false);
   const [copiedHash, setCopiedHash] = useState(false);
   const [reviewerNote, setReviewerNote] = useState('');
   const [notesHistory, setNotesHistory] = useState<string[]>([]);
@@ -65,6 +68,17 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
       onStatusChange(document.id, status);
     }
     setNotesHistory((prev) => [...prev, `[Status Updated]: Changed status to ${status}`]);
+  };
+
+  const handleDownloadOriginal = async () => {
+    try {
+      setIsDownloading(true);
+      await documentsApi.downloadDocument(document.id, document.filename);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Download failed.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -108,6 +122,21 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {!document.id.startsWith('demo-') && (
+              <button
+                onClick={handleDownloadOriginal}
+                disabled={isDownloading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                title="Download authentic document binary from storage"
+              >
+                {isDownloading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
+                <span>Download File</span>
+              </button>
+            )}
             <button
               onClick={() => alert('Report export pipeline scheduled for Milestone 11 (PDF Generation).')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-colors cursor-pointer"

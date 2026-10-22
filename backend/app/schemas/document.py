@@ -32,12 +32,26 @@ class DocumentRead(BaseModel):
     filename: str
     file_size: int
     mime_type: str
+    file_format: Optional[str] = None
     document_type: str
     status: str
     sha256: str
-    storage_path: str
     extracted_fields_count: int = 0
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DocumentDeleteResponse(BaseModel):
+    success: bool = True
+    message: str
+    id: str
+
+
+class DocumentPagination(BaseModel):
+    items: list[DocumentRead]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int

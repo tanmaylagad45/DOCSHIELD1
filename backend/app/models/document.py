@@ -66,6 +66,15 @@ class Document(Base, TimestampMixin):
         String(500),
         nullable=False,
     )
+    storage_filename: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+    )
+    file_format: Mapped[Optional[str]] = mapped_column(
+        String(20),
+        nullable=True,
+    )
     extracted_fields_count: Mapped[int] = mapped_column(
         Integer,
         default=0,

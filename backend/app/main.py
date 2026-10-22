@@ -63,12 +63,16 @@ app.add_exception_handler(DocShieldException, custom_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
 
 from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.documents import router as documents_router
 
 # Health endpoint at /api/health (direct) and versioned at /api/v1/health
 app.include_router(health_router, prefix="/api", tags=["Health"])
 
 # Direct compatibility for /api/auth routes
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
+
+# Direct compatibility for /api/documents routes
+app.include_router(documents_router, prefix="/api", tags=["Documents"])
 
 # Versioned API routes
 app.include_router(api_router, prefix=settings.API_V1_STR)

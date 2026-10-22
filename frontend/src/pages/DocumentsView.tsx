@@ -10,12 +10,15 @@ import {
   Trash2, 
   Calendar,
   FlaskConical,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Loader2
 } from 'lucide-react';
 import type { DocumentItem } from '../types';
 import type { AppOutletContext } from '../components/layout/AppLayout';
 import { Badge } from '../components/common/Badge';
 import { MilestoneNotice } from '../components/common/MilestoneNotice';
+import { documentsApi } from '../services/documentsApi';
 
 interface DocumentsViewProps {
   documents?: DocumentItem[];
@@ -37,6 +40,7 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const hasDocuments = documents.length > 0;
 
@@ -61,9 +65,9 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <MilestoneNotice
-        currentMilestone="Milestone 3.1 Clean Data Architecture"
-        plannedMilestone="Milestone 6 (FastAPI Document Database & Storage)"
-        description="The document repository runs on active session records. Persistent database storage will be connected in Milestone 6."
+        currentMilestone="Milestone 4C Secure Document Management"
+        plannedMilestone="Milestone 7 (PyMuPDF & Tesseract Extraction Engine)"
+        description="The document repository is connected to persistent SQLite storage and private file storage. Documents are isolated to your authenticated account."
       />
 
       {/* Header */}
@@ -259,10 +263,32 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
                             e.stopPropagation();
                             onSelectDocument(doc);
                           }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/60 transition-colors"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/60 transition-colors cursor-pointer"
                         >
                           <span>Inspect</span>
                           <ExternalLink className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              setDownloadingId(doc.id);
+                              await documentsApi.downloadDocument(doc.id, doc.filename);
+                            } catch (err: unknown) {
+                              alert(err instanceof Error ? err.message : 'Download failed.');
+                            } finally {
+                              setDownloadingId(null);
+                            }
+                          }}
+                          disabled={downloadingId === doc.id}
+                          className="p-1 rounded-lg text-slate-400 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                          title="Download document binary"
+                        >
+                          {downloadingId === doc.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                          ) : (
+                            <Download className="w-3.5 h-3.5" />
+                          )}
                         </button>
                         <button
                           onClick={(e) => {

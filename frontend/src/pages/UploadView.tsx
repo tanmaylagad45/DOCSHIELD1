@@ -2,13 +2,16 @@ import React, { useState, useRef } from 'react';
 import { 
   UploadCloud, 
   CheckCircle2, 
-  FileText 
+  FileText,
+  AlertCircle,
+  Loader2,
+  ShieldCheck
 } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import { MilestoneNotice } from '../components/common/MilestoneNotice';
-import { SimulationBanner } from '../components/common/SimulationBanner';
 import type { DocumentType, DocumentItem } from '../types';
 import type { AppOutletContext } from '../components/layout/AppLayout';
+import { documentsApi } from '../services/documentsApi';
 
 interface UploadViewProps {
   onDocumentUploaded?: (newDoc: DocumentItem) => void;
@@ -23,49 +26,66 @@ export const UploadView: React.FC<UploadViewProps> = (props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<DocumentType>('PASSPORT');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successDoc, setSuccessDoc] = useState<DocumentItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg'];
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErrorMessage(null);
+    setSuccessDoc(null);
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        setErrorMessage('Unsupported file format. Please choose a PDF, PNG, or JPEG file.');
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setErrorMessage(`File exceeds the 10 MB maximum limit (${(file.size / (1024 * 1024)).toFixed(2)} MB).`);
+        return;
+      }
+      setSelectedFile(file);
     }
   };
 
-  const handleSimulateUpload = (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
+    if (!selectedFile) {
+      setErrorMessage('Please select a document file to upload.');
+      return;
+    }
 
-    setTimeout(() => {
-      setIsProcessing(false);
-      const newDoc: DocumentItem = {
-        id: `doc-${Date.now().toString().slice(-4)}`,
-        filename: selectedFile ? selectedFile.name : `LOCAL_${documentType}_SPECIMEN.pdf`,
-        fileSize: selectedFile ? selectedFile.size : 2100400,
-        mimeType: selectedFile ? selectedFile.type : 'application/pdf',
-        documentType: documentType,
-        status: 'UPLOADED',
-        sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        extractedFieldsCount: 0,
-        authenticityScore: undefined,
-        simulatedIssuerStatus: undefined,
-      };
+    setIsProcessing(true);
+    setErrorMessage(null);
+    setSuccessDoc(null);
+
+    try {
+      const newDoc = await documentsApi.uploadDocument(selectedFile, documentType);
       setSuccessDoc(newDoc);
       onDocumentUploaded(newDoc);
-    }, 800);
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Upload failed. Please check file format and server connection.';
+      setErrorMessage(msg);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <MilestoneNotice
-        currentMilestone="Milestone 2 Frontend UI"
-        plannedMilestone="Milestone 6 (FastAPI Upload API & Storage)"
-        description="This ingestion workspace runs in client-side simulation mode. Documents are processed locally with synthetic intelligence heuristics."
+        currentMilestone="Milestone 4C Document Management"
+        plannedMilestone="Milestone 7 (PyMuPDF & Tesseract Extraction Engine)"
+        description="Documents uploaded here are securely validated via binary magic bytes, integrity-hashed with SHA-256, and stored in isolated server storage."
       />
-
-      <SimulationBanner />
 
       <div className="max-w-2xl mx-auto rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/60 p-6 shadow-xs space-y-6">
         <div>
@@ -74,11 +94,18 @@ export const UploadView: React.FC<UploadViewProps> = (props) => {
             <span>Document Ingestion Workspace</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Select a document category and upload a synthetic sample for OCR extraction and authenticity verification.
+            Upload genuine document specimens (PDF, PNG, JPEG up to 10 MB) for secure storage and verified integrity indexing.
           </p>
         </div>
 
-        <form onSubmit={handleSimulateUpload} className="space-y-5">
+        {errorMessage && (
+          <div className="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 flex items-start gap-2.5 text-xs text-rose-700 dark:text-rose-300">
+            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleUpload} className="space-y-5">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Document Classification
@@ -123,33 +150,50 @@ export const UploadView: React.FC<UploadViewProps> = (props) => {
               <div>
                 <UploadCloud className="w-8 h-8 text-sky-500 mx-auto mb-2" />
                 <p className="text-xs font-bold text-slate-900 dark:text-white">
-                  Drag & drop synthetic file, or click to browse
+                  Click to browse or drop file here
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  PDF, PNG, JPG up to 15MB
+                  Supported formats: PDF, PNG, JPG up to 10MB
                 </p>
               </div>
             )}
           </div>
 
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0" />
+            <span>Server verifies binary magic bytes, streams to isolated storage, and generates cryptographic SHA-256.</span>
+          </div>
+
           <button
             type="submit"
-            disabled={isProcessing}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
+            disabled={isProcessing || !selectedFile}
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
           >
-            {isProcessing ? 'Staging Document Locally...' : 'Ingest Document to Workspace'}
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Uploading to Secure Storage...</span>
+              </>
+            ) : (
+              <span>Upload Document to Storage</span>
+            )}
           </button>
         </form>
 
         {successDoc && (
-          <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between text-xs">
+          <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between text-xs animate-in fade-in">
             <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Ingested: <strong>{successDoc.filename}</strong> <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-normal">(Staged locally in current session)</span></span>
+              <div>
+                <p>Saved to private storage: <strong>{successDoc.filename}</strong></p>
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono">
+                  SHA-256: {successDoc.sha256.slice(0, 16)}... • {(successDoc.fileSize / (1024 * 1024)).toFixed(2)} MB
+                </p>
+              </div>
             </div>
             <button
               onClick={() => onSelectDocument(successDoc)}
-              className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors cursor-pointer shrink-0"
             >
               Inspect Document
             </button>

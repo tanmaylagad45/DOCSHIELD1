@@ -46,9 +46,9 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <MilestoneNotice
-        currentMilestone="Milestone 3.1 Data Architecture"
-        plannedMilestone="Milestone 5 (FastAPI Dashboard Endpoints & DB Ingestion)"
-        description="The dashboard is currently operating on clean in-memory state. Real document extractions and database storage will be connected in Milestone 6."
+        currentMilestone="Milestone 4C Secure Document Management"
+        plannedMilestone="Milestone 7 (PyMuPDF & Tesseract Extraction Engine)"
+        description="The dashboard displays real document metrics from your authenticated account and local storage. Processing and extraction pipeline will connect in Milestone 7."
       />
 
       {/* Simulation Notice Banner */}

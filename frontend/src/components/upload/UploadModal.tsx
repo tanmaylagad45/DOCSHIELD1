@@ -9,6 +9,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import type { DocumentType, DocumentItem } from '../../types';
+import { documentsApi } from '../../services/documentsApi';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
   if (!isOpen) return null;
 
-  const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
 
   const validateAndSetFile = (file: File) => {
@@ -41,7 +42,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      setError(`File size exceeds 15MB limit (${(file.size / (1024 * 1024)).toFixed(1)}MB).`);
+      setError(`File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(1)}MB).`);
       return;
     }
     setSelectedFile(file);
@@ -72,45 +73,29 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     }
   };
 
-  const handleUploadSubmit = () => {
+  const handleUploadSubmit = async () => {
     if (!selectedFile) return;
 
     setIsUploading(true);
-    setUploadProgress(15);
+    setError(null);
+    setUploadProgress(20);
 
-    // Simulate upload and extraction pipeline steps
     const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 95;
-        }
-        return prev + 25;
-      });
-    }, 250);
+      setUploadProgress((prev) => (prev < 85 ? prev + 15 : prev));
+    }, 200);
 
-    setTimeout(() => {
+    try {
+      const newDoc = await documentsApi.uploadDocument(selectedFile, documentType);
       clearInterval(interval);
-      setIsUploading(false);
-
-      const newDoc: DocumentItem = {
-        id: `doc-${Date.now().toString().slice(-4)}`,
-        filename: selectedFile.name,
-        fileSize: selectedFile.size,
-        mimeType: selectedFile.type,
-        documentType: documentType,
-        status: 'UPLOADED',
-        sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        extractedFieldsCount: 0,
-        authenticityScore: undefined,
-        simulatedIssuerStatus: undefined,
-      };
-
+      setUploadProgress(100);
       onDocumentUploaded(newDoc);
       onClose();
-    }, 800);
+    } catch (err: unknown) {
+      clearInterval(interval);
+      setError(err instanceof Error ? err.message : 'Upload failed. Please check format or connection.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -208,7 +193,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                   Drop your document here or <span className="text-sky-500 underline underline-offset-2">browse files</span>
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                  Supports PDF, PNG, JPG up to 15MB
+                  Supports PDF, PNG, JPG up to 10MB
                 </p>
               </div>
             </div>
@@ -229,7 +214,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
               <span className="flex items-center gap-1.5 font-medium">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500" />
-                Staging document in local session workspace...
+                Uploading document to secure private storage...
               </span>
               <span className="font-semibold">{uploadProgress}%</span>
             </div>

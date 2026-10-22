@@ -14,7 +14,8 @@ backend/
 │   ├── script.py.mako            # Migration revision template
 │   └── versions/                 # Auto-generated revision scripts
 │       ├── 26d15204d5a0_initial_schema_users_documents_.py
-│       └── 584ce8990b1a_add_sessions_table.py
+│       ├── 584ce8990b1a_add_sessions_table.py
+│       └── 4c5b7aa7ce87_add_storage_filename_and_file_format_to_.py
 ├── app/
 │   ├── __init__.py               # Package root (configures pure Python mode)
 │   ├── main.py                   # FastAPI application factory, CORS & lifecycle
@@ -27,21 +28,22 @@ backend/
 │   │           ├── health.py     # Diagnostics & DB connectivity check (/api/health)
 │   │           ├── auth.py       # Session login, register, logout, me, and CSRF token
 │   │           ├── users.py      # User management & profile lookup
-│   │           ├── documents.py  # User-isolated document repository & metadata
+│   │           ├── documents.py  # Secure upload, listing, download & deletion
 │   │           └── assessments.py# Verification assessment queries & staging
 │   ├── core/
 │   │   ├── __init__.py
 │   │   ├── auth.py               # Session verification, cookie management & CSRF dependencies
 │   │   ├── config.py             # Pydantic-settings environment configuration
 │   │   ├── database.py           # SQLAlchemy 2.x engine, SQLite WAL & foreign keys
-│   │   ├── errors.py             # Centralized JSON exception handlers
-│   │   └── security.py           # Argon2id hashing, session/CSRF tokens & password policy
+│   │   ├── errors.py             # Centralized JSON exception handlers & domain errors
+│   │   ├── security.py           # Argon2id hashing, session/CSRF tokens & password policy
+│   │   └── storage.py            # Magic bytes validation, streaming uploads & file cleanup
 │   ├── models/
 │   │   ├── __init__.py           # Model exports for Alembic discovery
 │   │   ├── base.py               # DeclarativeBase and TimestampMixin
 │   │   ├── user.py               # Users table
 │   │   ├── session.py            # Active server-managed user sessions
-│   │   ├── document.py           # Documents table
+│   │   ├── document.py           # Documents table (with storage metadata & format)
 │   │   ├── assessment.py         # Assessments table (with is_demo isolation)
 │   │   └── audit.py              # Immutable AuditLog table
 │   └── schemas/
@@ -49,13 +51,14 @@ backend/
 │       ├── health.py             # Health check response DTO
 │       ├── auth.py               # AuthRegister, AuthLogin, UserProfile DTOs
 │       ├── user.py               # UserCreate, UserRead, UserUpdate DTOs
-│       ├── document.py           # DocumentCreate, DocumentRead DTOs
+│       ├── document.py           # DocumentCreate, DocumentRead, DocumentDeleteResponse DTOs
 │       ├── assessment.py         # AssessmentCreate, AssessmentRead DTOs
 │       └── audit.py              # AuditLogRead DTO
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py               # Isolated temporary test database & TestClient
 │   ├── test_auth.py              # Comprehensive authentication, session & CSRF tests
+│   ├── test_documents.py         # Upload, magic bytes, streaming, download, and delete tests
 │   ├── test_health.py            # Startup and health probe tests
 │   ├── test_database.py          # Session handling and SQLite foreign key enforcement
 │   ├── test_models.py            # Model constraints, defaults & cascade deletion
@@ -63,7 +66,7 @@ backend/
 │   ├── test_api_endpoints.py     # Users, Documents, Assessments API tests
 │   ├── test_config.py            # Configuration & CORS parsing tests
 │   └── test_errors.py            # Standardized 404 & 422 error response tests
-├── uploads/                      # Storage directory for ingested document binaries (.gitkeep)
+├── uploads/                      # Isolated private document binary store (.gitkeep)
 ├── requirements.txt              # Production and development dependencies
 ├── .env.example                  # Environment template with placeholders
 └── .env                          # Local development environment (git-ignored)
@@ -113,7 +116,8 @@ Key environment settings:
 | `ENVIRONMENT` | `"development"` | `development`, `testing`, or `production` |
 | `DATABASE_URL` | `"sqlite:///./docshield.db"` | Relational database connection string |
 | `CORS_ORIGINS` | `["http://localhost:5173"]` | Authorized frontend origins (credentials enabled) |
-| `UPLOAD_DIR` | `"./uploads"` | Relative filesystem directory for documents |
+| `UPLOAD_DIR` | `"./uploads"` | Relative filesystem directory for private document storage |
+| `MAX_UPLOAD_SIZE_BYTES` | `10485760` | Maximum upload size in bytes (10 MB) |
 | `SECRET_KEY` | *(Placeholder string)* | Cryptographic signing key |
 | `SESSION_COOKIE_NAME` | `"docshield_session"` | Name of the HTTP-only session cookie |
 | `CSRF_COOKIE_NAME` | `"docshield_csrf"` | Name of the double-submit CSRF cookie |
@@ -162,64 +166,72 @@ Once the server is running, interactive documentation is available at:
 | `GET` | `/api/v1/auth/me` | Fetch currently authenticated user profile (401 if unauthenticated) |
 | `GET` | `/api/v1/auth/csrf` | Issue or retrieve active CSRF token |
 
+### Document Management & Storage (`/api/v1/documents` & `/api/documents`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/documents/upload` | Protected: Multipart upload with magic bytes check, SHA-256 hash & private storage |
+| `POST` | `/api/v1/documents` | Protected: Binary upload (multipart) or metadata registration (JSON) |
+| `GET` | `/api/v1/documents` | Protected: List documents owned by user with pagination (`X-Total-Count`, etc.) |
+| `GET` | `/api/v1/documents/{id}` | Protected: Retrieve document metadata (internal physical path excluded) |
+| `GET` | `/api/v1/documents/{id}/download` | Protected: Stream binary with attachment disposition & `nosniff` header |
+| `DELETE`| `/api/v1/documents/{id}` | Protected: Delete database record and safely purge storage file from disk |
+
 ### Diagnostics & Core Services
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/` | Root operational status and service metadata |
 | `GET` | `/api/health` | Health probe (database connectivity, version, environment) |
 | `GET` | `/api/v1/health` | Versioned health probe |
-| `GET` | `/api/v1/documents` | Protected: List documents belonging to authenticated user |
-| `POST` | `/api/v1/documents` | Protected: Register document metadata for authenticated user |
-| `GET` | `/api/v1/documents/{id}` | Protected: Retrieve document metadata (user-isolated) |
 | `GET` | `/api/v1/assessments` | Protected: List assessments (empty array by default) |
 | `POST` | `/api/v1/assessments` | Protected: Register document assessment record |
 | `GET` | `/api/v1/assessments/{id}`| Protected: Retrieve assessment details and recommendation |
 
 ---
 
-## Authentication & Security Architecture
+## Secure Storage Architecture & Integrity
 
-1. **Server-Managed Sessions**:
-   - Sessions are persisted in the `sessions` database table with cryptographically secure 256-bit random tokens (`secrets.token_urlsafe(32)`).
-   - Invalidation on logout updates `is_revoked = True` in the database immediately, rejecting subsequent requests with the same cookie.
-   - Session lifetime is configurable (24 hours standard, 7 days with "Remember Me").
+1. **Content-Based Magic Bytes Validation**:
+   - Client MIME types and extensions are not trusted blindly.
+   - Uploaded binary headers are inspected for authentic magic bytes:
+     - **PDF**: `%PDF-` (`0x25 0x50 0x44 0x46 0x2D`)
+     - **PNG**: `\x89PNG\r\n\x1a\n` (`0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A`)
+     - **JPEG**: `\xFF\xD8\xFF` (`0xFF 0xD8 0xFF`)
+   - Rejects empty files (0 bytes), unsupported extensions, and extension-content mismatches.
+   - Note: File signature validation confirms format integrity; it does not certify official government authenticity.
 
-2. **HTTP-Only Cookies**:
-   - Session identifier is transmitted solely via the `docshield_session` cookie flagged with `HttpOnly`, preventing JavaScript access and XSS theft.
-   - `SameSite="Lax"` prevents cross-site request exploitation while allowing seamless top-level navigation.
-   - `Secure` flag configurable via `COOKIE_SECURE` (`false` for localhost development, `true` for production HTTPS).
+2. **Chunked Streaming & SHA-256 Computation**:
+   - Files are read in 64 KB chunks rather than loading entire files into memory.
+   - Cryptographic SHA-256 digest is incrementally computed during the stream.
+   - Enforces a 10 MB maximum upload limit (`MAX_UPLOAD_SIZE_BYTES`); partial files are atomically purged if limit is exceeded.
 
-3. **Double-Submit CSRF Defense**:
-   - The backend sets a readable `docshield_csrf` cookie on session creation or via `GET /api/v1/auth/csrf`.
-   - The frontend API client automatically reads this cookie and injects it into the `X-CSRF-Token` header for state-changing requests (`POST`, `PUT`, `PATCH`, `DELETE`).
-   - The server verifies that the header matches the cookie token before executing state-changing endpoints.
+3. **Path Traversal & Random Storage Keys**:
+   - Client-provided filenames are sanitized for display only.
+   - Files are stored using random UUIDv4 names (e.g., `4a2e1d7b....pdf`).
+   - The storage directory is private and never mounted as public static content.
 
-4. **Credential Protection**:
-   - Passwords hashed using **Argon2id** via `passlib[argon2]`.
-   - Email addresses normalized to lowercase and stripped of whitespace before storage and authentication lookup.
-   - Login credential failures return a generic `"Invalid email or password"` (HTTP 401) to protect against account enumeration.
-   - Strict password complexity: Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special symbol.
+4. **Multi-User Isolation**:
+   - All document operations (`GET`, `POST`, `DELETE`, download) enforce `Document.user_id == current_user.id`.
+   - Access attempts to documents belonging to other users return a clean `404 Not Found` to prevent account enumeration.
 
-5. **Resource Isolation**:
-   - Protected endpoints require an active session (`get_current_user` dependency).
-   - Document and assessment queries are strictly scoped to the authenticated `current_user.id`.
+5. **Local Storage Limitations**:
+   - The current storage engine uses local disk storage (`backend/uploads`).
+   - For multi-instance, clustered production deployments, an S3-compatible object store adapter (MinIO, AWS S3, or GCS) can be configured seamlessly behind the existing `storage.py` abstraction.
 
 ---
 
 ## Testing & Quality
 
-All tests run against an **isolated temporary SQLite database** (`test_docshield.db`) that is automatically provisioned and dropped during test execution, ensuring zero risk to development data.
+All tests run against an **isolated temporary SQLite database** (`test_docshield.db`) and a clean isolated temporary storage directory:
 
 ```bash
 # Run complete test suite with verbose output
 python -m pytest -v
 ```
 
-**Test Coverage Summary (37 Tests Passed):**
-- Authentication & registration lifecycle: valid registration, duplicate accounts (409 Conflict), weak password rejection (422 Unprocessable Entity).
-- Login security: successful login, invalid email (401), invalid password (401), generic error responses.
-- Session management: session creation, session lookup (`/me`), session invalidation on logout.
-- CSRF protection: rejection of state-changing requests without CSRF token (403 Forbidden), rejection with mismatched token (403 Forbidden).
-- User resource isolation: unauthenticated access rejection (401 Unauthorized), multi-user document isolation (User A cannot view User B's documents).
-- SQLite Foreign Key enforcement (`PRAGMA foreign_keys=ON`) and cascade deletions.
-- Health diagnostics and CORS configuration validation.
+**Test Coverage Summary (51 Tests Passed):**
+- **Document Storage & Uploads (14 tests)**: PDF, PNG, JPEG binary uploads, magic bytes verification, empty file rejection, 10MB limit enforcement, streaming SHA-256 calculation, partial file cleanup.
+- **Access Control & User Isolation**: Unauthenticated access rejection (401), cross-user document isolation (User A cannot view, download, or delete User B's documents).
+- **Download & Deletion**: Safe attachment headers (`Content-Disposition`, `nosniff`), database and storage disk synchronization upon deletion.
+- **Authentication & Sessions (11 tests)**: Argon2id password hashing, generic 401 credential errors, HTTP-only session cookies, Double-Submit CSRF protection.
+- **Database & Model Integrity**: Foreign key enforcement (`PRAGMA foreign_keys=ON`), unique constraints, cascade deletion.
+

@@ -38,6 +38,25 @@ class ConflictError(DocShieldException):
         )
 
 
+class InvalidFileError(DocShieldException):
+    def __init__(self, message: str, details: dict = None):
+        super().__init__(
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details or {},
+        )
+
+
+class FileTooLargeError(DocShieldException):
+    def __init__(self, max_bytes: int, actual_bytes: int = None):
+        max_mb = max_bytes / (1024 * 1024)
+        super().__init__(
+            message=f"File exceeds maximum allowed upload size of {max_mb:.0f} MB.",
+            status_code=getattr(status, "HTTP_413_CONTENT_TOO_LARGE", 413),
+            details={"max_bytes": max_bytes, "actual_bytes": actual_bytes} if actual_bytes else {"max_bytes": max_bytes},
+        )
+
+
 async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
     """
     Standardized handler for HTTPExceptions.

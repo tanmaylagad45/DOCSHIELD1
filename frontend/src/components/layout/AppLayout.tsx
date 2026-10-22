@@ -49,11 +49,11 @@ export const AppLayout: React.FC = () => {
     const fetchUserDocs = async () => {
       try {
         const backendDocs = await documentsApi.getDocuments();
-        if (isSubscribed && backendDocs.length > 0) {
+        if (isSubscribed) {
           setDocuments(backendDocs);
         }
       } catch {
-        // Fall back gracefully to local state
+        // Fall back gracefully to local state if server unreachable
       }
     };
     fetchUserDocs();
@@ -66,16 +66,16 @@ export const AppLayout: React.FC = () => {
   const openCasesCount = cases.filter((c) => c.status === 'OPEN' || c.status === 'IN_REVIEW').length;
 
   const handleDocumentUploaded = (newDoc: DocumentItem) => {
-    setDocuments((prev) => [newDoc, ...prev]);
+    setDocuments((prev) => [newDoc, ...prev.filter((d) => d.id !== newDoc.id)]);
     setSelectedDocument(newDoc);
     setAuditLogs((prev) => [
       {
         id: `al-${Date.now()}`,
         entityType: 'DOCUMENT',
         entityId: newDoc.id,
-        action: 'STAGED_UPLOAD',
-        actor: 'Operator (Current Session)',
-        details: `Ingested ${newDoc.filename} (${(newDoc.fileSize / (1024 * 1024)).toFixed(2)} MB) - Staged in memory`,
+        action: 'SECURE_UPLOAD',
+        actor: 'Operator (Authenticated)',
+        details: `Uploaded ${newDoc.filename} (${(newDoc.fileSize / (1024 * 1024)).toFixed(2)} MB) to private storage`,
         timestamp: new Date().toISOString(),
       },
       ...prev,
@@ -103,23 +103,31 @@ export const AppLayout: React.FC = () => {
     ]);
   };
 
-  const handleDeleteDocument = (docId: string) => {
-    setDocuments((prev) => prev.filter((d) => d.id !== docId));
-    if (selectedDocument?.id === docId) {
-      setSelectedDocument(null);
+  const handleDeleteDocument = async (docId: string) => {
+    try {
+      if (!docId.startsWith('demo-')) {
+        await documentsApi.deleteDocument(docId);
+      }
+      setDocuments((prev) => prev.filter((d) => d.id !== docId));
+      if (selectedDocument?.id === docId) {
+        setSelectedDocument(null);
+      }
+      setAuditLogs((prev) => [
+        {
+          id: `al-${Date.now()}`,
+          entityType: 'DOCUMENT',
+          entityId: docId,
+          action: 'DELETE',
+          actor: 'Operator (Authenticated)',
+          details: `Removed document ${docId} from repository and storage`,
+          timestamp: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+    } catch (err) {
+      console.error('Failed to delete document:', err);
+      alert(err instanceof Error ? err.message : 'Failed to delete document.');
     }
-    setAuditLogs((prev) => [
-      {
-        id: `al-${Date.now()}`,
-        entityType: 'DOCUMENT',
-        entityId: docId,
-        action: 'DELETE',
-        actor: 'Operator (Current Session)',
-        details: `Removed document ${docId} from local workspace repository`,
-        timestamp: new Date().toISOString(),
-      },
-      ...prev,
-    ]);
   };
 
   const handleUpdateCaseStatus = (caseId: string, newStatus: Case['status']) => {

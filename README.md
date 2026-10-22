@@ -226,6 +226,7 @@ DocShield strictly separates verified, actively implemented technologies from pl
 | **Migrations** | [Alembic](https://alembic.sqlalchemy.org/) | `^1.15.1` | Schema revision versioning, autogenerate migrations, and rollback |
 | **Password Security** | [Argon2id](https://passlib.readthedocs.io/) | `^1.7.4` | Memory-hard cryptographic password hashing via `passlib[argon2]` |
 | **Session & CSRF** | Server-Managed SQLite Sessions | `Native` | 256-bit secure token sessions, HttpOnly cookies & Double-Submit CSRF |
+| **Secure Storage** | Private Local Disk Storage | `Native` | Magic bytes signature check, streaming SHA-256, path traversal defense & safe download |
 | **Test Suite** | [pytest](https://docs.pytest.org/) & [httpx](https://www.python-httpx.org/) | `^8.3.5` | Automated test suite with isolated in-memory/file test database |
 
 ### Planned Processing & AI Technologies
@@ -248,10 +249,11 @@ DocShield strictly separates verified, actively implemented technologies from pl
 | **04** | **Operator Workspace UI** | Dashboard, cases queue, document viewer, and compliance rule views | `COMPLETED` |
 | **05** | **Authentication & Access UI** | Login, registration, role selection, and session handling UI | `COMPLETED` |
 | **06** | **FastAPI Core & Real Auth** | Server sessions, Argon2id, CSRF protection & React AuthContext | `COMPLETED` |
-| **07** | **Document Processing Pipeline** | Secure file upload, PyMuPDF parsing, and Tesseract OCR integration | `PLANNED` |
-| **08** | **Heuristic Scoring Engine** | Multi-signal authenticity assessment and simulated issuer adapters | `PLANNED` |
-| **09** | **Compliance & Adjudication Engine**| Declarative rule evaluation, manual overrides, and audit trails | `PLANNED` |
-| **10** | **Reporting & Export Suite** | PDF/JSON verification report generator and end-to-end test suite | `PLANNED` |
+| **07** | **Secure Document Storage** | Private storage, magic bytes check, SHA-256 hashing, download & delete | `COMPLETED` |
+| **08** | **Document Processing Pipeline** | PyMuPDF parsing and Tesseract OCR integration | `PLANNED` |
+| **09** | **Heuristic Scoring Engine** | Multi-signal authenticity assessment and simulated issuer adapters | `PLANNED` |
+| **10** | **Compliance & Adjudication Engine**| Declarative rule evaluation, manual overrides, and audit trails | `PLANNED` |
+| **11** | **Reporting & Export Suite** | PDF/JSON verification report generator and end-to-end test suite | `PLANNED` |
 
 ---
 

@@ -24,9 +24,10 @@ class Settings(BaseSettings):
         "http://localhost:3000",
     ]
 
-    # File Storage
+    # File Storage (Milestone 4C)
     UPLOAD_DIR: str = "./uploads"
-    MAX_UPLOAD_SIZE_BYTES: int = 25 * 1024 * 1024  # 25 MB
+    MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
+    ALLOWED_UPLOAD_EXTENSIONS: List[str] = [".pdf", ".png", ".jpg", ".jpeg"]
 
     # Authentication & Security Blueprint
     SECRET_KEY: str = "insecure-default-change-in-production-docshield-secret"
