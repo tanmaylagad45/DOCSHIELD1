@@ -99,18 +99,18 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         fileSize: selectedFile.size,
         mimeType: selectedFile.type,
         documentType: documentType,
-        status: 'VERIFIED',
+        status: 'UPLOADED',
         sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        extractedFieldsCount: 7,
-        authenticityScore: 92,
-        simulatedIssuerStatus: 'ACTIVE_ISSUED',
+        extractedFieldsCount: 0,
+        authenticityScore: undefined,
+        simulatedIssuerStatus: undefined,
       };
 
       onDocumentUploaded(newDoc);
       onClose();
-    }, 1200);
+    }, 800);
   };
 
   return (
@@ -229,7 +229,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
               <span className="flex items-center gap-1.5 font-medium">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500" />
-                Parsing document & running simulated verification...
+                Staging document in local session workspace...
               </span>
               <span className="font-semibold">{uploadProgress}%</span>
             </div>

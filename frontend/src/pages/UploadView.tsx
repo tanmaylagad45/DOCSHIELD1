@@ -40,21 +40,21 @@ export const UploadView: React.FC<UploadViewProps> = (props) => {
       setIsProcessing(false);
       const newDoc: DocumentItem = {
         id: `doc-${Date.now().toString().slice(-4)}`,
-        filename: selectedFile ? selectedFile.name : `SYNTHETIC_${documentType}_SPECIMEN.pdf`,
+        filename: selectedFile ? selectedFile.name : `LOCAL_${documentType}_SPECIMEN.pdf`,
         fileSize: selectedFile ? selectedFile.size : 2100400,
         mimeType: selectedFile ? selectedFile.type : 'application/pdf',
         documentType: documentType,
-        status: 'VERIFIED',
+        status: 'UPLOADED',
         sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        extractedFieldsCount: 8,
-        authenticityScore: 92,
-        simulatedIssuerStatus: 'ACTIVE_ISSUED',
+        extractedFieldsCount: 0,
+        authenticityScore: undefined,
+        simulatedIssuerStatus: undefined,
       };
       setSuccessDoc(newDoc);
       onDocumentUploaded(newDoc);
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -137,15 +137,15 @@ export const UploadView: React.FC<UploadViewProps> = (props) => {
             disabled={isProcessing}
             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
           >
-            {isProcessing ? 'Running Simulated Extraction Pipeline...' : 'Start Ingestion Pipeline'}
+            {isProcessing ? 'Staging Document Locally...' : 'Ingest Document to Workspace'}
           </button>
         </form>
 
         {successDoc && (
           <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span>Ingested: <strong>{successDoc.filename}</strong></span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>Ingested: <strong>{successDoc.filename}</strong> <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-normal">(Staged locally in current session)</span></span>
             </div>
             <button
               onClick={() => onSelectDocument(successDoc)}

@@ -48,16 +48,16 @@ export const LandingFooter: React.FC = () => {
             </p>
           </div>
 
-          {/* Links: Platform Modules */}
+          {/* Links: Platform & Access */}
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Platform Modules
+              Platform & Access
             </h4>
             <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-              <li><Link to="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard Overview</Link></li>
-              <li><Link to="/documents" className="hover:text-sky-500 transition-colors">Document Repository</Link></li>
-              <li><Link to="/upload" className="hover:text-sky-500 transition-colors">Document Ingestion</Link></li>
-              <li><Link to="/cases" className="hover:text-sky-500 transition-colors">Cases & Review</Link></li>
+              <li><Link to="/login" className="hover:text-sky-500 transition-colors font-medium text-sky-600 dark:text-sky-400">Sign In (Demo)</Link></li>
+              <li><Link to="/register" className="hover:text-sky-500 transition-colors">Create Account</Link></li>
+              <li><Link to="/forgot-password" className="hover:text-sky-500 transition-colors">Password Recovery</Link></li>
+              <li><Link to="/dashboard" className="hover:text-sky-500 transition-colors">Operator Dashboard</Link></li>
             </ul>
           </div>
 

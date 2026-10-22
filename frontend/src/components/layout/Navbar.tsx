@@ -3,17 +3,27 @@ import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, 
   UploadCloud, 
-  Sparkles, 
   Search,
-  Globe
+  Globe,
+  User,
+  RotateCcw,
+  FlaskConical
 } from 'lucide-react';
 import { ThemeToggle } from '../common/ThemeToggle';
 
 interface NavbarProps {
   onUploadClick: () => void;
+  isDemoMode?: boolean;
+  onLoadDemoFixtures?: () => void;
+  onClearData?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onUploadClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onUploadClick,
+  isDemoMode = false,
+  onLoadDemoFixtures,
+  onClearData
+}) => {
   return (
     <header className="sticky top-0 z-30 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-200">
       <div className="flex items-center justify-between px-4 sm:px-6 h-16">
@@ -42,20 +52,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onUploadClick }) => {
           </Link>
         </div>
 
-        {/* Global Search and Status */}
+        {/* Global Search */}
         <div className="hidden md:flex items-center gap-3 flex-1 max-w-md mx-8">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Search documents by ID, hash, or applicant name..."
+              placeholder="Search repository by filename, ID, or SHA-256..."
               className="w-full pl-9 pr-4 py-1.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 transition-all"
             />
           </div>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Development Fixture Sandbox Controls */}
+          {isDemoMode ? (
+            <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-700 dark:text-amber-300">
+              <FlaskConical className="w-3.5 h-3.5 text-amber-500" />
+              <span>Demo Fixtures Active</span>
+              {onClearData && (
+                <button
+                  onClick={onClearData}
+                  className="ml-1 inline-flex items-center gap-1 font-semibold underline hover:text-amber-900 dark:hover:text-amber-100 cursor-pointer"
+                  title="Reset to empty baseline"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            onLoadDemoFixtures && (
+              <button
+                onClick={onLoadDemoFixtures}
+                className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-800 cursor-pointer"
+                title="Load optional sample specimens for development testing"
+              >
+                <FlaskConical className="w-3 h-3 text-sky-500" />
+                <span>Load Test Fixtures</span>
+              </button>
+            )
+          )}
+
           {/* Public Landing Link */}
           <Link
             to="/"
@@ -65,12 +104,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onUploadClick }) => {
             <Globe className="w-3.5 h-3.5 text-sky-500" />
             <span>Public Site</span>
           </Link>
-
-          {/* Simulated Mode Pill */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Simulated Sandbox</span>
-          </div>
 
           {/* Upload Button */}
           <button
@@ -84,10 +117,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onUploadClick }) => {
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* User Profile Avatar */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-400 text-white text-xs font-bold flex items-center justify-center shadow-xs">
-              TL
+          {/* Generic Operator Silhouette Avatar */}
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800" title="Operator Workspace">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+              <User className="w-4 h-4" />
             </div>
           </div>
         </div>

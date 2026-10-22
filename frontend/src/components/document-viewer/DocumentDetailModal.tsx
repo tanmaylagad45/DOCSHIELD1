@@ -11,7 +11,10 @@ import {
   Sparkles,
   ArrowRight,
   Send,
-  Download
+  Download,
+  Clock,
+  Layers,
+  HelpCircle
 } from 'lucide-react';
 import type { DocumentItem } from '../../types';
 import { 
@@ -36,10 +39,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<'FIELDS' | 'AUTHENTICITY' | 'COMPLIANCE' | 'REVIEW'>('FIELDS');
   const [copiedHash, setCopiedHash] = useState(false);
   const [reviewerNote, setReviewerNote] = useState('');
-  const [notesHistory, setNotesHistory] = useState<string[]>([
-    'Automated extraction completed in 420ms.',
-    'Simulated issuer adapter executed query against test registry.'
-  ]);
+  const [notesHistory, setNotesHistory] = useState<string[]>([]);
 
   if (!document) return null;
 
@@ -86,6 +86,11 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
                 <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
                   {document.documentType}
                 </span>
+                {document.id.startsWith('demo-') && (
+                  <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-sm bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-bold">
+                    Demo Fixture
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
                 <span>ID: {document.id}</span>
@@ -104,7 +109,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => alert('Download report feature scheduled in Milestone 11 (PDF Generation).')}
+              onClick={() => alert('Report export pipeline scheduled for Milestone 11 (PDF Generation).')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
@@ -119,7 +124,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
           </div>
         </div>
 
-        {/* Legal Simulation Disclaimer Banner */}
+        {/* Simulation Disclaimer Banner */}
         <div className="px-6 pt-3 pb-1">
           <SimulationBanner compact />
         </div>
@@ -147,7 +152,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Explainable Authenticity ({document.authenticityScore || 0}%)</span>
+            <span>Explainable Authenticity ({document.authenticityScore !== undefined ? `${document.authenticityScore}%` : 'Pending'})</span>
           </button>
 
           <button
@@ -181,69 +186,62 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
           {/* TAB 1: EXTRACTED FIELDS & OCR PREVIEW */}
           {activeTab === 'FIELDS' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Document Visualizer Mockup */}
+              {/* Document Visualizer Panel */}
               <div className="lg:col-span-5 space-y-3">
                 <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="font-semibold uppercase tracking-wider text-[11px]">Synthetic Document Preview</span>
+                  <span className="font-semibold uppercase tracking-wider text-[11px]">Document Layout</span>
                   <span>Page 1 of 1</span>
                 </div>
-                <div className="relative aspect-3/4 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4 flex flex-col justify-between overflow-hidden shadow-inner">
-                  {/* Subtle document watermark */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 dark:opacity-10 rotate-45 text-4xl font-black">
-                    SYNTHETIC TEST
-                  </div>
-
-                  {/* Document Header representation */}
-                  <div className="space-y-2 border-b border-slate-300 dark:border-slate-800 pb-3">
+                
+                <div className="relative aspect-3/4 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between overflow-hidden shadow-inner">
+                  {/* Subtle document header */}
+                  <div className="space-y-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center text-sky-500 font-bold text-xs">
-                        ID
+                      <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center font-bold text-xs">
+                        <FileText className="w-4 h-4" />
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-slate-400">
-                        OFFICIAL SAMPLE
+                      <span className="text-[10px] font-mono text-slate-400 uppercase">
+                        {document.documentType}
                       </span>
                     </div>
-                    <div className="h-3 w-3/4 bg-slate-300 dark:bg-slate-800 rounded-sm" />
-                    <div className="h-2 w-1/2 bg-slate-200 dark:bg-slate-800/60 rounded-sm" />
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                      {document.filename}
+                    </p>
+                    <p className="text-[10px] font-mono text-slate-400">
+                      {(document.fileSize / (1024 * 1024)).toFixed(2)} MB • {document.mimeType}
+                    </p>
                   </div>
 
-                  {/* Visualizer bounding boxes */}
-                  <div className="space-y-3 my-4">
-                    <div className="p-2 rounded-lg border border-sky-500/50 bg-sky-500/10 space-y-1">
-                      <div className="flex justify-between items-center text-[10px] text-sky-600 dark:text-sky-400 font-bold">
-                        <span>FULL NAME BOUNDING BOX</span>
-                        <span>98.4%</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        {fields[0]?.fieldValue || 'JANE ELEANOR DOE'}
+                  {/* Bounding Boxes or Staged Notice */}
+                  {fields.length > 0 ? (
+                    <div className="space-y-2.5 my-4">
+                      {fields.slice(0, 3).map((field) => (
+                        <div key={field.id} className="p-2 rounded-lg border border-sky-500/40 bg-sky-500/10 space-y-0.5">
+                          <div className="flex justify-between items-center text-[10px] text-sky-600 dark:text-sky-400 font-bold">
+                            <span>{field.fieldName.toUpperCase()} BOUNDS</span>
+                            <span>{field.confidence.toFixed(1)}%</span>
+                          </div>
+                          <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 font-mono truncate">
+                            {field.fieldValue}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 my-auto rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-center space-y-2">
+                      <Layers className="w-8 h-8 text-slate-400 mx-auto" />
+                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        OCR Coordinates Awaiting Extraction
+                      </p>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">
+                        Visual bounding boxes and confidence overlays will render when connected to the PyMuPDF/Tesseract worker.
                       </p>
                     </div>
+                  )}
 
-                    <div className="p-2 rounded-lg border border-emerald-500/50 bg-emerald-500/10 space-y-1">
-                      <div className="flex justify-between items-center text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                        <span>DOCUMENT NUMBER</span>
-                        <span>99.1%</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 font-mono">
-                        {fields[1]?.fieldValue || 'P982410291'}
-                      </p>
-                    </div>
-
-                    <div className="p-2 rounded-lg border border-indigo-500/50 bg-indigo-500/10 space-y-1">
-                      <div className="flex justify-between items-center text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
-                        <span>EXPIRY DATE</span>
-                        <span>98.5%</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        {fields[5]?.fieldValue || '2031-08-09'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* MRZ Strip */}
-                  <div className="p-2 rounded-lg bg-slate-200/80 dark:bg-slate-800/80 font-mono text-[9px] text-slate-700 dark:text-slate-300 tracking-widest break-all border border-slate-300 dark:border-slate-700">
-                    P&lt;UTOPOEDOE&lt;&lt;JANE&lt;ELEANOR&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br/>
-                    P9824102919UTO9205142F3108097&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;04
+                  {/* Bottom Strip */}
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 font-mono text-[9px] text-slate-400 truncate">
+                    SHA-256: {document.sha256}
                   </div>
                 </div>
               </div>
@@ -255,164 +253,210 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
                   <span>{fields.length} normalized fields</span>
                 </div>
 
-                <div className="divide-y divide-slate-100 dark:divide-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 overflow-hidden shadow-xs">
-                  {fields.map((field) => (
-                    <div key={field.id} className="p-3.5 flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-                            {field.fieldName}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono">
-                            {field.fieldType}
-                          </span>
-                        </div>
-                        <p className="text-xs font-bold text-slate-900 dark:text-white font-mono break-all">
-                          {field.fieldValue}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        {/* Confidence Indicator */}
-                        <div className="text-right">
-                          <span className="text-[10px] font-semibold text-slate-400">OCR Confidence</span>
-                          <p className={`text-xs font-bold ${field.confidence > 90 ? 'text-emerald-500' : field.confidence > 75 ? 'text-amber-500' : 'text-rose-500'}`}>
-                            {field.confidence.toFixed(1)}%
+                {fields.length > 0 ? (
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 overflow-hidden shadow-xs">
+                    {fields.map((field) => (
+                      <div key={field.id} className="p-3.5 flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                              {field.fieldName}
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono">
+                              {field.fieldType}
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold text-slate-900 dark:text-white font-mono break-all">
+                            {field.fieldValue}
                           </p>
                         </div>
-                        {field.isConsistent ? (
-                          <span title="Cross-field consistency verified">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                          </span>
-                        ) : (
-                          <span title="Consistency anomaly detected">
-                            <AlertTriangle className="w-4 h-4 text-rose-500" />
-                          </span>
-                        )}
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="text-right">
+                            <span className="text-[10px] font-semibold text-slate-400">OCR Confidence</span>
+                            <p className={`text-xs font-bold ${field.confidence > 90 ? 'text-emerald-500' : field.confidence > 75 ? 'text-amber-500' : 'text-rose-500'}`}>
+                              {field.confidence.toFixed(1)}%
+                            </p>
+                          </div>
+                          {field.isConsistent ? (
+                            <span title="Cross-field consistency verified">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                            </span>
+                          ) : (
+                            <span title="Consistency anomaly detected">
+                              <AlertTriangle className="w-4 h-4 text-rose-500" />
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Empty Fields State */
+                  <div className="p-8 text-center space-y-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
+                    <HelpCircle className="w-8 h-8 text-slate-400 mx-auto" />
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      No extracted fields available
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                      This document is staged in local memory. Real OCR field normalization, MRZ parsing, and coordinate mapping will be executed by the backend pipeline in Milestone 7.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           {/* TAB 2: EXPLAINABLE AUTHENTICITY ASSESSMENT */}
-          {activeTab === 'AUTHENTICITY' && verification && (
-            <div className="space-y-6">
-              {/* Score Highlight Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-transparent border border-sky-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
-                    Calculated Authenticity Score
-                  </span>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                      {verification.authenticityScore}%
+          {activeTab === 'AUTHENTICITY' && (
+            verification ? (
+              <div className="space-y-6">
+                {/* Score Highlight Card */}
+                <div className="p-5 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-transparent border border-sky-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Calculated Authenticity Score
                     </span>
-                    <Badge status={verification.recommendation} size="md" />
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        {verification.authenticityScore}%
+                      </span>
+                      <Badge status={verification.recommendation} size="md" />
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Calculated from multi-signal heuristics including metadata integrity, OCR typography alignment, and simulated issuer check.
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Calculated from multi-signal heuristics including metadata integrity, OCR typography alignment, and simulated issuer check.
-                  </p>
+
+                  <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1 shrink-0 text-right sm:text-left">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                      Simulated Issuer Response
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <Badge status={verification.simulatedIssuerStatus} size="sm" />
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Source: {verification.simulatedIssuerName}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1 shrink-0 text-right sm:text-left">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
-                    Simulated Issuer Response
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    <Badge status={verification.simulatedIssuerStatus} size="sm" />
-                  </div>
-                  <p className="text-[11px] text-slate-500">
-                    Source: {verification.simulatedIssuerName}
-                  </p>
-                </div>
-              </div>
+                {/* Signals Breakdown Matrix */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                    Itemized Explainability Signals ({verification.signals.length})
+                  </h4>
 
-              {/* Signals Breakdown Matrix */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  Itemized Explainability Signals ({verification.signals.length})
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {verification.signals.map((sig) => (
-                    <div 
-                      key={sig.id}
-                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-all"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h5 className="text-xs font-bold text-slate-900 dark:text-white">
-                              {sig.title}
-                            </h5>
-                            <Badge status={sig.status} size="sm" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {verification.signals.map((sig) => (
+                      <div 
+                        key={sig.id}
+                        className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h5 className="text-xs font-bold text-slate-900 dark:text-white">
+                                {sig.title}
+                              </h5>
+                              <Badge status={sig.status} size="sm" />
+                            </div>
+                            <span className="text-[10px] font-mono text-slate-400">
+                              Category: {sig.category} • Weight: {sig.weight}%
+                            </span>
                           </div>
-                          <span className="text-[10px] font-mono text-slate-400">
-                            Category: {sig.category} • Weight: {sig.weight}%
+                          <span className={`text-xs font-bold ${sig.status === 'PASS' ? 'text-emerald-500' : sig.status === 'WARN' ? 'text-amber-500' : 'text-rose-500'}`}>
+                            {sig.impact}
                           </span>
                         </div>
-                        <span className={`text-xs font-bold ${sig.status === 'PASS' ? 'text-emerald-500' : sig.status === 'WARN' ? 'text-amber-500' : 'text-rose-500'}`}>
-                          {sig.impact}
-                        </span>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          {sig.description}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                        {sig.description}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              /* Empty Authenticity State */
+              <div className="p-12 text-center space-y-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
+                <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center mx-auto">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Authenticity Assessment Pending
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                    This document has not been evaluated by the authenticity matrix. Multi-signal heuristics (structural PDF metadata, typography micro-alignment, MRZ check, and simulated issuer validation) will be calculated in Milestone 8.
+                  </p>
+                </div>
+              </div>
+            )
           )}
 
           {/* TAB 3: REGULATORY COMPLIANCE RULES */}
           {activeTab === 'COMPLIANCE' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span className="font-semibold uppercase tracking-wider text-[11px]">
-                  Evaluated Rules Engine Checklist
-                </span>
-                <span>{compliance.filter(c => c.status === 'PASS').length} of {compliance.length} Rules Passed</span>
-              </div>
+            compliance.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span className="font-semibold uppercase tracking-wider text-[11px]">
+                    Evaluated Rules Engine Checklist
+                  </span>
+                  <span>{compliance.filter(c => c.status === 'PASS').length} of {compliance.length} Rules Passed</span>
+                </div>
 
-              <div className="space-y-3">
-                {compliance.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs flex items-start justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-xs font-mono font-bold text-sky-600 dark:text-sky-400">
-                          {item.ruleCode}
-                        </span>
-                        <h5 className="text-xs font-bold text-slate-900 dark:text-white">
-                          {item.ruleName}
-                        </h5>
-                        <Badge status={item.severity} size="sm" />
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300">
-                        {item.message}
-                      </p>
-                      {item.remediation && (
-                        <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-1.5">
-                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                          <span><strong>Recommended Action:</strong> {item.remediation}</span>
+                <div className="space-y-3">
+                  {compliance.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs flex items-start justify-between gap-4"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-xs font-mono font-bold text-sky-600 dark:text-sky-400">
+                            {item.ruleCode}
+                          </span>
+                          <h5 className="text-xs font-bold text-slate-900 dark:text-white">
+                            {item.ruleName}
+                          </h5>
+                          <Badge status={item.severity} size="sm" />
                         </div>
-                      )}
-                    </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300">
+                          {item.message}
+                        </p>
+                        {item.remediation && (
+                          <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-1.5">
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                            <span><strong>Recommended Action:</strong> {item.remediation}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="shrink-0">
-                      <Badge status={item.status} size="md" />
+                      <div className="shrink-0">
+                        <Badge status={item.status} size="md" />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Empty Compliance State */
+              <div className="p-12 text-center space-y-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center mx-auto">
+                  <Scale className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Compliance Policy Check Pending
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                    This document has not been audited against declarative KYC policies. The rule engine evaluation (age threshold, validity periods, address recency) will run automatically in Milestone 9.
+                  </p>
+                </div>
+              </div>
+            )
           )}
 
           {/* TAB 4: CASE REVIEW & ACTIONS */}
@@ -435,7 +479,7 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                   >
                     <ArrowRight className="w-4 h-4" />
-                    <span>Assign to Manual Secondary Review</span>
+                    <span>Assign to Manual Review</span>
                   </button>
                   <button
                     onClick={() => handleDecision('FLAGGED')}
@@ -479,19 +523,26 @@ export const DocumentDetailModal: React.FC<DocumentDetailModalProps> = ({
 
               {/* Timeline of notes */}
               <div className="space-y-2">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  Case Activity History
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span>Session Case Activity ({notesHistory.length})</span>
                 </span>
-                <div className="space-y-2">
-                  {notesHistory.map((note, index) => (
-                    <div 
-                      key={index}
-                      className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-xs text-slate-700 dark:text-slate-300 font-mono"
-                    >
-                      {note}
-                    </div>
-                  ))}
-                </div>
+                {notesHistory.length > 0 ? (
+                  <div className="space-y-2">
+                    {notesHistory.map((note, index) => (
+                      <div 
+                        key={index}
+                        className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-xs text-slate-700 dark:text-slate-300 font-mono"
+                      >
+                        {note}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">
+                    No reviewer notes recorded in this session.
+                  </p>
+                )}
               </div>
             </div>
           )}

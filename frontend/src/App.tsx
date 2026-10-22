@@ -11,6 +11,9 @@ import { ComplianceView } from './pages/ComplianceView';
 import { ReportsView } from './pages/ReportsView';
 import { AuditView } from './pages/AuditView';
 import { SettingsView } from './pages/SettingsView';
+import { LoginView } from './pages/LoginView';
+import { RegisterView } from './pages/RegisterView';
+import { ForgotPasswordView } from './pages/ForgotPasswordView';
 
 export const App: React.FC = () => {
   return (
@@ -19,6 +22,11 @@ export const App: React.FC = () => {
         <Routes>
           {/* Public SaaS 3D Landing Page */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Authentication Routes (Milestone 2) */}
+          <Route path="/login" element={<LoginView />} />
+          <Route path="/register" element={<RegisterView />} />
+          <Route path="/forgot-password" element={<ForgotPasswordView />} />
 
           {/* Internal Application & Dashboard Routes */}
           <Route element={<AppLayout />}>

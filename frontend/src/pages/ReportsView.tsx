@@ -1,38 +1,61 @@
 import React, { useState } from 'react';
 import { 
   FileSpreadsheet, 
-  Eye 
+  Eye,
+  FileCode,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import type { AppOutletContext } from '../components/layout/AppLayout';
 import { MilestoneNotice } from '../components/common/MilestoneNotice';
 
 export const ReportsView: React.FC = () => {
+  const outlet = useOutletContext<AppOutletContext | undefined>();
   const [jsonPreviewOpen, setJsonPreviewOpen] = useState(false);
 
-  const sampleReportData = {
-    reportId: "REP-2026-DOC-101",
-    generatedAt: new Date().toISOString(),
-    specimen: "SYNTHETIC_PASSPORT_JDOE.pdf",
-    sha256: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-    overallAuthenticityScore: 94,
-    recommendation: "ACCEPT",
-    simulatedIssuerVerification: {
-      status: "ACTIVE_ISSUED",
-      registry: "Synthetic Civil Registry Service",
-      reference: "P982410291",
-      disclaimer: "Simulated response for demonstration purposes only."
-    },
-    regulatoryCompliance: [
-      { code: "KYC-AGE-18", status: "PASS", message: "Age 34 meets threshold" },
-      { code: "DOC-VALIDITY", status: "PASS", message: "Expires 2031-08-09" }
-    ]
+  const activeDoc = outlet?.selectedDocument || (outlet?.documents && outlet.documents.length > 0 ? outlet.documents[0] : null);
+
+  // Official Export Schema Template (Milestone 3.1: No fabricated fake user credentials)
+  const reportSchemaSpecification = {
+    $schema: "https://docshield.ai/schemas/v1/verification-dossier.json",
+    specificationVersion: "1.0.0",
+    description: "Export Schema Specification for DocShield Authenticity & Compliance Dossier",
+    targetDocument: activeDoc ? {
+      documentId: activeDoc.id,
+      filename: activeDoc.filename,
+      sha256: activeDoc.sha256,
+      status: activeDoc.status,
+      authenticityScore: activeDoc.authenticityScore ?? "PENDING_EVALUATION"
+    } : "No document currently selected",
+    schemaFields: {
+      reportId: "string (Format: REP-YYYY-DOC-XXXX)",
+      generatedAt: "string (ISO 8601 UTC timestamp)",
+      specimen: {
+        filename: "string",
+        fileSize: "integer (bytes)",
+        mimeType: "string",
+        sha256: "string (64-character SHA-256 digest)"
+      },
+      authenticity: {
+        score: "integer (0-100)",
+        recommendation: "ACCEPT | MANUAL_REVIEW_REQUIRED | REJECT",
+        evaluatedSignals: "Array<VerificationSignal>"
+      },
+      compliance: {
+        passCount: "integer",
+        failCount: "integer",
+        evaluatedRules: "Array<ComplianceRuleResult>"
+      }
+    }
   };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <MilestoneNotice
-        currentMilestone="Milestone 2 Frontend Blueprint"
+        currentMilestone="Milestone 3.1 Clean Data Architecture"
         plannedMilestone="Milestone 11 (PDF Verification Reports Engine)"
-        description="Comprehensive PDF and JSON export generation will be integrated with the ReportLab/Weasyprint backend service."
+        description="Comprehensive PDF and JSON export generation will be integrated with the ReportLab/Weasyprint backend service in Milestone 11."
       />
 
       {/* Header */}
@@ -43,7 +66,7 @@ export const ReportsView: React.FC = () => {
             <span>Verification Reports & Certifications</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Export comprehensive, itemized audit reports for regulatory compliance and audit submissions.
+            Export itemized audit dossiers and regulatory compliance certifications.
           </p>
         </div>
 
@@ -51,14 +74,18 @@ export const ReportsView: React.FC = () => {
           onClick={() => setJsonPreviewOpen(!jsonPreviewOpen)}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
         >
-          <Eye className="w-4 h-4" />
-          <span>{jsonPreviewOpen ? 'Hide JSON Specimen' : 'Preview JSON Report Specimen'}</span>
+          {jsonPreviewOpen ? <Eye className="w-4 h-4" /> : <FileCode className="w-4 h-4" />}
+          <span>{jsonPreviewOpen ? 'Hide Schema Specification' : 'Preview JSON Dossier Schema'}</span>
         </button>
       </div>
 
       {jsonPreviewOpen && (
-        <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto shadow-inner">
-          <pre>{JSON.stringify(sampleReportData, null, 2)}</pre>
+        <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto shadow-inner space-y-2">
+          <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800 text-[11px]">
+            <span>DOCUMENT DOSSIER SPECIFICATION (JSON)</span>
+            <span className="text-teal-400 font-bold">v1.0.0</span>
+          </div>
+          <pre>{JSON.stringify(reportSchemaSpecification, null, 2)}</pre>
         </div>
       )}
 
@@ -72,17 +99,18 @@ export const ReportsView: React.FC = () => {
             <span className="text-xs text-slate-400">Single Document</span>
           </div>
 
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Comprehensive Authenticity Dossier (PDF)
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-teal-500" />
+            <span>Comprehensive Authenticity Dossier (PDF)</span>
           </h3>
 
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            Multi-page dossier containing high-resolution rendered document preview, highlighted OCR bounding boxes, explainable authenticity signal breakdowns, and compliance rule outputs.
+            Multi-page dossier containing rendered document preview, highlighted OCR bounding coordinates, explainable authenticity signal breakdowns, and compliance rule verification outputs.
           </p>
 
           <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 dark:border-slate-800">
             <span>Includes cryptographic SHA-256 seal</span>
-            <span className="font-semibold text-teal-500">Planned M11</span>
+            <span className="font-semibold text-teal-500">Scheduled Milestone 11</span>
           </div>
         </div>
 
@@ -94,8 +122,9 @@ export const ReportsView: React.FC = () => {
             <span className="text-xs text-slate-400">Governance & Batch</span>
           </div>
 
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Regulatory Compliance Audit Summary (CSV/JSON)
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-purple-500" />
+            <span>Regulatory Compliance Audit Summary (CSV/JSON)</span>
           </h3>
 
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -104,7 +133,7 @@ export const ReportsView: React.FC = () => {
 
           <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 dark:border-slate-800">
             <span>Structured for SIEM / Data Lakes</span>
-            <span className="font-semibold text-purple-500">Planned M11</span>
+            <span className="font-semibold text-purple-500">Scheduled Milestone 11</span>
           </div>
         </div>
       </div>

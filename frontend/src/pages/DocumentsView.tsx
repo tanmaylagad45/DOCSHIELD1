@@ -8,7 +8,9 @@ import {
   ExternalLink, 
   UploadCloud, 
   Trash2, 
-  Calendar 
+  Calendar,
+  FlaskConical,
+  RotateCcw
 } from 'lucide-react';
 import type { DocumentItem } from '../types';
 import type { AppOutletContext } from '../components/layout/AppLayout';
@@ -20,6 +22,7 @@ interface DocumentsViewProps {
   onSelectDocument?: (doc: DocumentItem) => void;
   onUploadClick?: () => void;
   onDeleteDocument?: (docId: string) => void;
+  onLoadDemoFixtures?: () => void;
 }
 
 export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
@@ -29,10 +32,13 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
   const onSelectDocument = props.onSelectDocument || outlet?.onSelectDocument || (() => {});
   const onUploadClick = props.onUploadClick || outlet?.onOpenUpload || (() => {});
   const onDeleteDocument = props.onDeleteDocument || outlet?.onDeleteDocument || (() => {});
+  const onLoadDemoFixtures = props.onLoadDemoFixtures || outlet?.loadDemoFixtures;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+
+  const hasDocuments = documents.length > 0;
 
   const filteredDocs = documents.filter((doc) => {
     const matchesSearch = 
@@ -46,12 +52,18 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
     return matchesSearch && matchesType && matchesStatus;
   });
 
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedType('ALL');
+    setSelectedStatus('ALL');
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <MilestoneNotice
-        currentMilestone="Milestone 2 Frontend Prototype"
+        currentMilestone="Milestone 3.1 Clean Data Architecture"
         plannedMilestone="Milestone 6 (FastAPI Document Database & Storage)"
-        description="Showing simulated synthetic specimens with OCR text layers and authenticity signals."
+        description="The document repository runs on active session records. Persistent database storage will be connected in Milestone 6."
       />
 
       {/* Header */}
@@ -62,13 +74,13 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
             <span>Document Repository</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Browse, filter, and inspect verified synthetic identity files and extracted intelligence.
+            Browse, filter, and inspect verified identity credentials and extracted intelligence.
           </p>
         </div>
 
         <button
           onClick={onUploadClick}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer self-start sm:self-auto"
         >
           <UploadCloud className="w-4 h-4" />
           <span>Upload Document</span>
@@ -84,8 +96,9 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by file name or SHA-256 hash..."
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40"
+            disabled={!hasDocuments}
+            placeholder={hasDocuments ? "Search by file name or SHA-256 hash..." : "Repository is currently empty..."}
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 disabled:opacity-60 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -95,11 +108,12 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 w-full md:w-auto"
+            disabled={!hasDocuments}
+            className="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 w-full md:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <option value="ALL">All Classifications</option>
             <option value="PASSPORT">Passport</option>
-            <option value="DRIVING_LICENSE">Driver's License</option>
+            <option value="DRIVING_LICENSE">Driver&apos;s License</option>
             <option value="NATIONAL_ID">National ID</option>
             <option value="UTILITY_BILL">Utility Bill</option>
           </select>
@@ -108,9 +122,11 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 w-full md:w-auto"
+            disabled={!hasDocuments}
+            className="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500/40 w-full md:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <option value="ALL">All Statuses</option>
+            <option value="UPLOADED">Uploaded</option>
             <option value="VERIFIED">Verified</option>
             <option value="FLAGGED">Flagged</option>
             <option value="UNDER_REVIEW">Under Review</option>
@@ -119,17 +135,58 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
         </div>
       </div>
 
-      {/* Documents Grid / Table */}
+      {/* Documents Grid / Table / Empty State */}
       <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/60 shadow-xs overflow-hidden">
-        {filteredDocs.length === 0 ? (
+        {!hasDocuments ? (
+          /* Empty Repository State */
+          <div className="p-12 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center mx-auto">
+              <Files className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                No documents in repository
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                Your document repository is currently empty. Upload a passport, identity card, driver&apos;s license, or utility bill to start.
+              </p>
+            </div>
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={onUploadClick}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+              >
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload Document</span>
+              </button>
+              {onLoadDemoFixtures && (
+                <button
+                  onClick={onLoadDemoFixtures}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  <FlaskConical className="w-4 h-4 text-sky-500" />
+                  <span>Load Sample Test Fixtures</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : filteredDocs.length === 0 ? (
+          /* Filtered Results Empty State */
           <div className="p-12 text-center space-y-3">
             <Files className="w-10 h-10 text-slate-400 mx-auto" />
             <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
               No matching documents found
             </h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try adjusting your search criteria or upload a new synthetic document to test.
+              No documents match your search query or filter selection.
             </p>
+            <button
+              onClick={handleResetFilters}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset Filters</span>
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -214,7 +271,7 @@ export const DocumentsView: React.FC<DocumentsViewProps> = (props) => {
                               onDeleteDocument(doc.id);
                             }
                           }}
-                          className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                          className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                           title="Delete document"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
