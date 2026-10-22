@@ -1,5 +1,6 @@
 """
 Tests for API v1 resource endpoints: Users, Documents, Assessments.
+Validates zero-baseline defaults, authentication protection, and metadata staging.
 """
 
 from fastapi import status
@@ -26,25 +27,33 @@ def test_user_creation_and_listing(client):
     assert "already exists" in err_data["error"]["message"]
 
 
-def test_documents_empty_by_default(client):
+def test_documents_requires_authentication(client):
     """
-    Validates clean zero-state data requirement:
-    No documents exist by default.
+    Validates that unauthenticated requests to document endpoints return 401 Unauthorized.
     """
     response = client.get("/api/v1/documents")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_documents_empty_by_default(authenticated_client):
+    """
+    Validates clean zero-state data requirement for an authenticated user:
+    No documents exist by default.
+    """
+    response = authenticated_client.get("/api/v1/documents")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
 
-def test_document_not_found(client):
-    response = client.get("/api/v1/documents/DOC-NONEXISTENT")
+def test_document_not_found(authenticated_client):
+    response = authenticated_client.get("/api/v1/documents/DOC-NONEXISTENT")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     data = response.json()
     assert data["error"]["code"] == 404
     assert "DOC-NONEXISTENT" in data["error"]["message"]
 
 
-def test_document_metadata_registration(client):
+def test_document_metadata_registration(authenticated_client):
     payload = {
         "filename": "passport_scan.pdf",
         "file_size": 1048576,
@@ -53,7 +62,7 @@ def test_document_metadata_registration(client):
         "sha256": "c" * 64,
         "storage_path": "uploads/passport_scan.pdf",
     }
-    response = client.post("/api/v1/documents", json=payload)
+    response = authenticated_client.post("/api/v1/documents", json=payload)
     assert response.status_code == status.HTTP_201_CREATED
     data = response.json()
     assert data["id"].startswith("DOC-")

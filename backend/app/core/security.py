@@ -3,6 +3,8 @@ Security and password hashing utilities using Argon2.
 Raw passwords are never stored, logged, or exposed in API responses.
 """
 
+import re
+import secrets
 from typing import Optional
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
@@ -56,3 +58,37 @@ def normalize_email(email: str) -> str:
     if not email:
         raise ValueError("Email cannot be empty.")
     return email.strip().lower()
+
+
+def generate_session_token() -> str:
+    """
+    Generates a cryptographically random 256-bit session token string.
+    """
+    return secrets.token_hex(32)
+
+
+def generate_csrf_token() -> str:
+    """
+    Generates a cryptographically random 256-bit CSRF token string.
+    """
+    return secrets.token_hex(32)
+
+
+def validate_password_strength(password: str) -> Optional[str]:
+    """
+    Enforces server-side password security requirements:
+    - Minimum 8 characters
+    - At least one uppercase letter [A-Z]
+    - At least one lowercase letter [a-z]
+    - At least one digit or special character
+    Returns None if valid, or an error message describing the requirement.
+    """
+    if not password or len(password) < 8:
+        return "Password must be at least 8 characters in length."
+    if not re.search(r"[A-Z]", password):
+        return "Password must contain at least one uppercase letter (A-Z)."
+    if not re.search(r"[a-z]", password):
+        return "Password must contain at least one lowercase letter (a-z)."
+    if not re.search(r"[0-9!@#$%^&*(),.?\":{}|<>\-_+=]", password):
+        return "Password must contain at least one number or special character."
+    return None

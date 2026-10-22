@@ -92,3 +92,34 @@ def client(db_session):
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def auth_user(db_session):
+    """Creates a verified active user for testing."""
+    from app.core.security import hash_password
+    from app.models.user import User
+
+    user = User(
+        email="operator.alice@docshield.ai",
+        password_hash=hash_password("ValidPassword123!"),
+        full_name="Alice Operator",
+        role="OPERATOR",
+        is_active=True,
+    )
+    db_session.add(user)
+    db_session.flush()
+    return user
+
+
+@pytest.fixture
+def authenticated_client(client, auth_user):
+    """TestClient authenticated via real login with HTTP-only cookies and CSRF headers set."""
+    login_resp = client.post(
+        "/api/v1/auth/login",
+        json={"email": "operator.alice@docshield.ai", "password": "ValidPassword123!"},
+    )
+    assert login_resp.status_code == 200
+    csrf_token = login_resp.json().get("csrf_token")
+    client.headers["x-csrf-token"] = csrf_token
+    return client

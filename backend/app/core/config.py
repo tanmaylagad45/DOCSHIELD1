@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
+    # Server-Managed Session & Cookie Settings (Milestone 4B)
+    COOKIE_SECURE: bool = False  # Set to True in production with HTTPS
+    COOKIE_SAMESITE: str = "lax"  # "lax", "strict", or "none"
+    SESSION_COOKIE_NAME: str = "docshield_session"
+    CSRF_COOKIE_NAME: str = "docshield_csrf"
+    SESSION_EXPIRE_HOURS: int = 24
+    SESSION_REMEMBER_ME_DAYS: int = 7
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

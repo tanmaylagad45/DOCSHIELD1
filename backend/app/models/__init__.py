@@ -8,6 +8,7 @@ from app.models.user import User
 from app.models.document import Document, generate_document_id
 from app.models.assessment import Assessment
 from app.models.audit import AuditLog
+from app.models.session import Session
 
 __all__ = [
     "Base",
@@ -17,4 +18,5 @@ __all__ = [
     "generate_document_id",
     "Assessment",
     "AuditLog",
+    "Session",
 ]

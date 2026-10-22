@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Eye, 
   EyeOff, 
@@ -7,14 +7,16 @@ import {
   Lock, 
   ArrowRight, 
   AlertCircle, 
-  CheckCircle2, 
-  Info,
-  Loader2 
+  Loader2,
+  ShieldCheck
 } from 'lucide-react';
 import { AuthLayout } from '../components/auth/AuthLayout';
+import { useAuth } from '../context/AuthContext';
 
 export const LoginView: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
 
   // Form State
   const [email, setEmail] = useState('');
@@ -25,28 +27,34 @@ export const LoginView: React.FC = () => {
   // Validation & UI State
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  // If already logged in, redirect to intended page or dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = (location.state as any)?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   // Email regex validator
   const isValidEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setDemoSubmitted(false);
+    setServerError(null);
 
-    // Validate
+    // Client-side validation
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      newErrors.email = 'Email address is required.';
+      newErrors.email = 'Work email address is required.';
     } else if (!isValidEmail(email)) {
-      newErrors.email = 'Please enter a valid email address (e.g., analyst@docshield.ai).';
+      newErrors.email = 'Please enter a valid work email address.';
     }
 
     if (!password) {
       newErrors.password = 'Password is required.';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
     }
 
     setErrors(newErrors);
@@ -55,13 +63,22 @@ export const LoginView: React.FC = () => {
       return;
     }
 
-    // Simulate validation & submission
     setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      await login({
+        email: email.trim(),
+        password,
+        rememberMe,
+      });
+
+      const from = (location.state as any)?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    } catch (err: any) {
+      setServerError(err.message || 'Invalid email or password.');
+    } finally {
       setIsLoading(false);
-      setDemoSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 600);
+    }
   };
 
   return (
@@ -69,51 +86,21 @@ export const LoginView: React.FC = () => {
       title="Welcome back"
       subtitle="Sign in to your DocShield document intelligence workspace"
     >
-      {/* Demo Notice Banner */}
-      <div className="p-3 rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-800 dark:text-sky-300 text-xs flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <p className="font-semibold text-sky-900 dark:text-sky-200">
-            Frontend Demonstration Sandbox
-          </p>
-          <p className="text-[11px] text-sky-700 dark:text-sky-300/90 leading-relaxed">
-            Credential submission is validated locally. No passwords or tokens are stored or transmitted.
-          </p>
-        </div>
+      {/* Security Status Badge */}
+      <div className="p-3 rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-800 dark:text-sky-300 text-xs flex items-center gap-2.5">
+        <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0" />
+        <span className="text-[11.5px] text-slate-600 dark:text-slate-300">
+          Protected by Argon2id cryptographic password hashing and HTTP-only session tokens.
+        </span>
       </div>
 
-      {/* Demo Success / Action Banner */}
-      {demoSubmitted && (
-        <div className="p-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
-                Form Validation Successful (Demo)
-              </p>
-              <p className="text-[11px] text-emerald-700 dark:text-emerald-300/90 leading-relaxed">
-                Credentials for <strong className="font-mono">{email}</strong> passed client-side validation. Proceed to explore the operator dashboard or reset.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs cursor-pointer"
-            >
-              <span>Explore Dashboard</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => {
-                setDemoSubmitted(false);
-                setPassword('');
-              }}
-              className="px-3 py-1.5 rounded-lg border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-medium cursor-pointer"
-            >
-              Reset Form
-            </button>
+      {/* Server Error Alert */}
+      {serverError && (
+        <div className="p-3.5 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1">
+          <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="font-semibold text-rose-900 dark:text-rose-200">Sign in failed</p>
+            <p className="text-[11.5px] leading-relaxed">{serverError}</p>
           </div>
         </div>
       )}
@@ -139,8 +126,9 @@ export const LoginView: React.FC = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                if (serverError) setServerError(null);
               }}
-              placeholder="operator@enterprise.com"
+              placeholder="operator@docshield.ai"
               className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
                 errors.email 
                   ? 'border-rose-500 focus:ring-rose-500/40' 
@@ -185,6 +173,7 @@ export const LoginView: React.FC = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
                 if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                if (serverError) setServerError(null);
               }}
               placeholder="••••••••••••"
               className={`w-full pl-10 pr-11 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
@@ -226,7 +215,7 @@ export const LoginView: React.FC = () => {
               htmlFor="login-remember"
               className="text-xs text-slate-600 dark:text-slate-400 font-medium cursor-pointer select-none"
             >
-              Remember my device
+              Remember my device (7 days)
             </label>
           </div>
         </div>
@@ -240,7 +229,7 @@ export const LoginView: React.FC = () => {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Validating Credentials...</span>
+              <span>Verifying Credentials...</span>
             </>
           ) : (
             <>

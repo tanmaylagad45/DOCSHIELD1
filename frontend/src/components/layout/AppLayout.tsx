@@ -15,6 +15,8 @@ import {
 } from '../../services/mockData';
 import type { DocumentItem, Case, AuditLog, DashboardMetrics } from '../../types';
 
+import { documentsApi } from '../../services/documentsApi';
+
 export interface AppOutletContext {
   documents: DocumentItem[];
   cases: Case[];
@@ -40,6 +42,23 @@ export const AppLayout: React.FC = () => {
   const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
+
+  // Load authenticated user documents from backend
+  React.useEffect(() => {
+    let isSubscribed = true;
+    const fetchUserDocs = async () => {
+      try {
+        const backendDocs = await documentsApi.getDocuments();
+        if (isSubscribed && backendDocs.length > 0) {
+          setDocuments(backendDocs);
+        }
+      } catch {
+        // Fall back gracefully to local state
+      }
+    };
+    fetchUserDocs();
+    return () => { isSubscribed = false; };
+  }, []);
 
   // Derive metrics dynamically from available records
   const metrics = useMemo(() => calculateMetrics(documents), [documents]);

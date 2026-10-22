@@ -217,15 +217,23 @@ DocShield strictly separates verified, actively implemented technologies from pl
 | **Icons** | [Lucide React](https://lucide.dev/) | `^1.60.0` | Accessible, consistent technical icon set |
 | **Linter** | [oxlint](https://oxc.rs/) | `^1.88.0` | High-performance Rust-based JavaScript/TypeScript linter |
 
-### Planned Backend & AI Technologies
+### Active Backend & Datastore Technologies
+| Component | Technology | Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Web API Framework** | [FastAPI](https://fastapi.tiangolo.com/) | `^0.115.11` | High-performance async REST API with OpenAPI & automatic interactive docs |
+| **Schema Validation** | [Pydantic v2](https://docs.pydantic.dev/) | `^2.10.6` | Strongly-typed DTO validation, data normalization, and serialization |
+| **Database ORM** | [SQLAlchemy](https://www.sqlalchemy.org/) | `^2.0.38` | Relational 2.x ORM with SQLite foreign keys and WAL write-ahead log |
+| **Migrations** | [Alembic](https://alembic.sqlalchemy.org/) | `^1.15.1` | Schema revision versioning, autogenerate migrations, and rollback |
+| **Password Security** | [Argon2id](https://passlib.readthedocs.io/) | `^1.7.4` | Memory-hard cryptographic password hashing via `passlib[argon2]` |
+| **Session & CSRF** | Server-Managed SQLite Sessions | `Native` | 256-bit secure token sessions, HttpOnly cookies & Double-Submit CSRF |
+| **Test Suite** | [pytest](https://docs.pytest.org/) & [httpx](https://www.python-httpx.org/) | `^8.3.5` | Automated test suite with isolated in-memory/file test database |
+
+### Planned Processing & AI Technologies
 | Component | Planned Technology | Purpose |
 | :--- | :--- | :--- |
-| **Web API Framework** | [FastAPI](https://fastapi.tiangolo.com/) (Python 3.10+) | High-performance async REST API with automatic OpenAPI docs |
-| **Schema Validation** | [Pydantic v2](https://docs.pydantic.dev/) | Strongly-typed data validation and serialization |
 | **Document Processing** | [PyMuPDF](https://pymupdf.readthedocs.io/) | High-speed PDF rendering, structural analysis, and metadata extraction |
 | **OCR Engine** | [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) | Optical character recognition with word-level confidence metrics |
-| **Database** | [SQLite](https://www.sqlite.org/) / [SQLAlchemy](https://www.sqlalchemy.org/) | Local transactional storage for cases, documents, and audit logs |
-| **Test Suite** | [pytest](https://docs.pytest.org/) & [httpx](https://www.python-httpx.org/) | Automated unit, regression, and integration test suite |
+| **Heuristics Core** | Multi-signal verification | Forensic layout, font skew, and compression artifact detection |
 
 ---
 
@@ -238,8 +246,8 @@ DocShield strictly separates verified, actively implemented technologies from pl
 | **02** | **Design System & Foundation** | Theme engine, Tailwind v4 design tokens, and layout framework | `COMPLETED` |
 | **03** | **Cinematic 3D Landing Page** | Verification chamber hero, scroll story, and editorial brand identity | `COMPLETED` |
 | **04** | **Operator Workspace UI** | Dashboard, cases queue, document viewer, and compliance rule views | `COMPLETED` |
-| **05** | **Authentication & Access UI** | Login, registration, role selection, and session handling | `COMPLETED` |
-| **06** | **FastAPI Core & Datastore** | Python backend scaffolding, SQLite database, and Pydantic DTOs | `COMPLETED` |
+| **05** | **Authentication & Access UI** | Login, registration, role selection, and session handling UI | `COMPLETED` |
+| **06** | **FastAPI Core & Real Auth** | Server sessions, Argon2id, CSRF protection & React AuthContext | `COMPLETED` |
 | **07** | **Document Processing Pipeline** | Secure file upload, PyMuPDF parsing, and Tesseract OCR integration | `PLANNED` |
 | **08** | **Heuristic Scoring Engine** | Multi-signal authenticity assessment and simulated issuer adapters | `PLANNED` |
 | **09** | **Compliance & Adjudication Engine**| Declarative rule evaluation, manual overrides, and audit trails | `PLANNED` |

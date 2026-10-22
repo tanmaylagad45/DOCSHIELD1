@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Eye, 
@@ -8,14 +8,15 @@ import {
   User, 
   ArrowRight, 
   AlertCircle, 
-  CheckCircle2, 
-  Info,
-  Loader2
+  Loader2,
+  ShieldCheck
 } from 'lucide-react';
 import { AuthLayout } from '../components/auth/AuthLayout';
+import { useAuth } from '../context/AuthContext';
 
 export const RegisterView: React.FC = () => {
   const navigate = useNavigate();
+  const { register, isAuthenticated } = useAuth();
 
   // Form State
   const [fullName, setFullName] = useState('');
@@ -37,7 +38,14 @@ export const RegisterView: React.FC = () => {
     agreeTerms?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  // If already authenticated, redirect to dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Email regex validator
   const isValidEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
@@ -45,7 +53,7 @@ export const RegisterView: React.FC = () => {
   // Password strength calculator
   const calculateStrength = (pass: string) => {
     if (!pass) return 0;
-    let score = 1; // Base score for any non-empty input
+    let score = 1;
     if (pass.length >= 8) score++;
     if (/[A-Z]/.test(pass) && /[a-z]/.test(pass)) score++;
     if (/[0-9]/.test(pass) && /[^A-Za-z0-9]/.test(pass)) score++;
@@ -63,9 +71,9 @@ export const RegisterView: React.FC = () => {
 
   const currentStrength = getStrengthLabel(strengthScore);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setDemoSubmitted(false);
+    setServerError(null);
 
     // Validate
     const newErrors: typeof errors = {};
@@ -86,6 +94,10 @@ export const RegisterView: React.FC = () => {
       newErrors.password = 'Password is required.';
     } else if (password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters.';
+    } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+      newErrors.password = 'Password must contain uppercase and lowercase letters.';
+    } else if (!/[0-9!@#$%^&*(),.?":{}|<>\-_+=]/.test(password)) {
+      newErrors.password = 'Password must contain at least one number or special character.';
     }
 
     if (!confirmPassword) {
@@ -104,13 +116,22 @@ export const RegisterView: React.FC = () => {
       return;
     }
 
-    // Simulate registration
     setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      await register({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password,
+        agreeTerms,
+      });
+
+      navigate('/dashboard', { replace: true });
+    } catch (err: any) {
+      setServerError(err.message || 'Registration failed. Please check your details.');
+    } finally {
       setIsLoading(false);
-      setDemoSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 600);
+    }
   };
 
   return (
@@ -118,48 +139,21 @@ export const RegisterView: React.FC = () => {
       title="Create your account"
       subtitle="Start verifying documents with explainable AI intelligence"
     >
-      {/* Demo Notice Banner */}
-      <div className="p-3 rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-800 dark:text-sky-300 text-xs flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <p className="font-semibold text-sky-900 dark:text-sky-200">
-            Frontend Registration Demo
-          </p>
-          <p className="text-[11px] text-sky-700 dark:text-sky-300/90 leading-relaxed">
-            Form fields are checked locally. Real user provisioning and database storage will be added in Milestone 6.
-          </p>
-        </div>
+      {/* Security Status Badge */}
+      <div className="p-3 rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-800 dark:text-sky-300 text-xs flex items-center gap-2.5">
+        <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0" />
+        <span className="text-[11.5px] text-slate-600 dark:text-slate-300">
+          Operator accounts are secured with Argon2 password hashing and audited event logging.
+        </span>
       </div>
 
-      {/* Demo Success / Action Banner */}
-      {demoSubmitted && (
-        <div className="p-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
-                Registration Simulation Complete
-              </p>
-              <p className="text-[11px] text-emerald-700 dark:text-emerald-300/90 leading-relaxed">
-                Account created for <strong className="font-mono">{fullName}</strong> (<span className="font-mono">{email}</span>). No database records were modified.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs cursor-pointer"
-            >
-              <span>Explore Workspace</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              className="px-3 py-1.5 rounded-lg border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-medium cursor-pointer"
-            >
-              Go to Sign In
-            </button>
+      {/* Server Error Alert */}
+      {serverError && (
+        <div className="p-3.5 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1">
+          <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="font-semibold text-rose-900 dark:text-rose-200">Registration Failed</p>
+            <p className="text-[11.5px] leading-relaxed">{serverError}</p>
           </div>
         </div>
       )}
@@ -185,6 +179,7 @@ export const RegisterView: React.FC = () => {
               onChange={(e) => {
                 setFullName(e.target.value);
                 if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: undefined }));
+                if (serverError) setServerError(null);
               }}
               placeholder="Dr. Sarah Connor"
               className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
@@ -223,8 +218,9 @@ export const RegisterView: React.FC = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                if (serverError) setServerError(null);
               }}
-              placeholder="sarah@fintech.io"
+              placeholder="sarah@docshield.ai"
               className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
                 errors.email 
                   ? 'border-rose-500 focus:ring-rose-500/40' 
@@ -261,8 +257,9 @@ export const RegisterView: React.FC = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
                 if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                if (serverError) setServerError(null);
               }}
-              placeholder="At least 8 characters"
+              placeholder="At least 8 characters with Aa & 1-9"
               className={`w-full pl-10 pr-11 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
                 errors.password 
                   ? 'border-rose-500 focus:ring-rose-500/40' 
@@ -328,6 +325,7 @@ export const RegisterView: React.FC = () => {
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
                 if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                if (serverError) setServerError(null);
               }}
               placeholder="Re-enter password"
               className={`w-full pl-10 pr-11 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/60 border ${
@@ -365,6 +363,7 @@ export const RegisterView: React.FC = () => {
               onChange={(e) => {
                 setAgreeTerms(e.target.checked);
                 if (errors.agreeTerms) setErrors((prev) => ({ ...prev, agreeTerms: undefined }));
+                if (serverError) setServerError(null);
               }}
               className="w-4 h-4 mt-0.5 rounded-md border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-sky-500/40 cursor-pointer accent-sky-500 shrink-0"
             />
@@ -372,7 +371,7 @@ export const RegisterView: React.FC = () => {
               htmlFor="register-terms"
               className="text-[11.5px] text-slate-600 dark:text-slate-400 leading-snug cursor-pointer select-none"
             >
-              I agree to the <span className="text-slate-800 dark:text-slate-200 font-semibold">Terms of Service</span> and acknowledge that this workspace operates in a simulated verification sandbox.
+              I agree to the <span className="text-slate-800 dark:text-slate-200 font-semibold">Terms of Service</span> and acknowledge enterprise data verification guidelines.
             </label>
           </div>
           {errors.agreeTerms && (
@@ -392,7 +391,7 @@ export const RegisterView: React.FC = () => {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Provisioning Workspace Demo...</span>
+              <span>Registering Account...</span>
             </>
           ) : (
             <>

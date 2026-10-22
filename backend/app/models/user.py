@@ -10,6 +10,7 @@ from app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.document import Document
+    from app.models.session import Session
 
 
 class User(Base, TimestampMixin):
@@ -49,6 +50,12 @@ class User(Base, TimestampMixin):
     documents: Mapped[List["Document"]] = relationship(
         "Document",
         back_populates="owner",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    sessions: Mapped[List["Session"]] = relationship(
+        "Session",
+        back_populates="user",
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
