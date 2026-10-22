@@ -238,8 +238,8 @@ DocShield strictly separates verified, actively implemented technologies from pl
 | **02** | **Design System & Foundation** | Theme engine, Tailwind v4 design tokens, and layout framework | `COMPLETED` |
 | **03** | **Cinematic 3D Landing Page** | Verification chamber hero, scroll story, and editorial brand identity | `COMPLETED` |
 | **04** | **Operator Workspace UI** | Dashboard, cases queue, document viewer, and compliance rule views | `COMPLETED` |
-| **05** | **Authentication & Access UI** | Login, registration, role selection, and session handling | `IN PROGRESS` |
-| **06** | **FastAPI Core & Datastore** | Python backend scaffolding, SQLite database, and Pydantic DTOs | `PLANNED` |
+| **05** | **Authentication & Access UI** | Login, registration, role selection, and session handling | `COMPLETED` |
+| **06** | **FastAPI Core & Datastore** | Python backend scaffolding, SQLite database, and Pydantic DTOs | `COMPLETED` |
 | **07** | **Document Processing Pipeline** | Secure file upload, PyMuPDF parsing, and Tesseract OCR integration | `PLANNED` |
 | **08** | **Heuristic Scoring Engine** | Multi-signal authenticity assessment and simulated issuer adapters | `PLANNED` |
 | **09** | **Compliance & Adjudication Engine**| Declarative rule evaluation, manual overrides, and audit trails | `PLANNED` |
@@ -294,15 +294,44 @@ npm run lint
 npm run preview
 ```
 
-### Future Backend Setup (Milestones 6+)
+### Backend Installation & Execution
 
 ```bash
-# Future instructions when backend scaffolding is initiated:
+# 1. Enter the backend directory
 cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Create and activate a Python virtual environment (Python 3.10+)
+python -m venv .venv
+
+# On Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
+
+# 3. Install backend dependencies
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+
+# 4. Initialize environment configuration
+cp .env.example .env
+
+# 5. Apply database migrations to local SQLite
+python -m alembic upgrade head
+
+# 6. Launch the FastAPI development server
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+The API will be available at `http://127.0.0.1:8000/`.
+- Interactive Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc Documentation: `http://127.0.0.1:8000/redoc`
+- Health Diagnostic: `http://127.0.0.1:8000/api/health`
+
+### Backend Test Suite
+
+```bash
+# Execute complete backend pytest suite with isolated test DB
+cd backend
+python -m pytest -v
 ```
 
 ---
